@@ -1,24 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Send, CheckCircle, Phone, Clock, Shield } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Send, CheckCircle, Phone, Clock, Shield, AlertCircle } from "lucide-react";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { Button } from "@/components/ui/Button";
-
-type FormData = {
-  name: string;
-  email: string;
-  phone: string;
-  eventType: string;
-  eventDate: string;
-  guestCount: string;
-  location: string;
-  budget: string;
-  message: string;
-};
+import { reservationSchema, type ReservationFormData } from "@/lib/schemas/reservation";
+import { createReservation } from "@/lib/firebase/reservations";
 
 const eventTypes = [
   "Düğün",
@@ -47,24 +39,58 @@ const perks = [
   { icon: <Phone className="w-4 h-4" />, text: "Ücretsiz danışmanlık" },
 ];
 
+const inputClass =
+  "w-full h-11 px-4 rounded border border-[var(--border)] bg-[var(--white)] text-[var(--ink)] text-sm font-sans placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors";
+const inputErrorClass =
+  "w-full h-11 px-4 rounded border border-red-400 bg-[var(--white)] text-[var(--ink)] text-sm font-sans placeholder:text-[var(--muted)] focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-400 transition-colors";
+const labelClass =
+  "block text-xs font-sans font-semibold text-[var(--ink)] mb-1.5 tracking-wide uppercase";
+
 export function QuotePage() {
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState<FormData>({
-    name: "", email: "", phone: "", eventType: "",
-    eventDate: "", guestCount: "", location: "", budget: "", message: "",
+  const [firebaseError, setFirebaseError] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<ReservationFormData>({
+    resolver: zodResolver(reservationSchema),
+    defaultValues: {
+      customerName: "",
+      email: "",
+      phone: "",
+      eventType: "",
+      eventDate: "",
+      location: "",
+      budget: "",
+      message: "",
+    },
   });
 
-  const update = (field: keyof FormData, value: string) =>
-    setForm((prev) => ({ ...prev, [field]: value }));
+  const selectedBudget = watch("budget");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    // Faz D'de Firestore'a yazılacak — şimdilik simüle ediyoruz
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    setSubmitted(true);
+  const onSubmit = async (data: ReservationFormData) => {
+    setFirebaseError("");
+    try {
+      await createReservation({
+        customerName: data.customerName,
+        email: data.email,
+        phone: data.phone,
+        eventType: data.eventType,
+        eventDate: data.eventDate,
+        guestCount: data.guestCount ? parseInt(data.guestCount, 10) : undefined,
+        location: data.location,
+        budget: data.budget,
+        message: data.message,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      console.error(err);
+      setFirebaseError("Gönderme sırasında bir hata oluştu. Lütfen tekrar deneyin veya bizi arayın.");
+    }
   };
 
   if (submitted) {
@@ -120,79 +146,88 @@ export function QuotePage() {
           {/* Form */}
           <div className="lg:col-span-2">
             <FadeIn>
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 {/* Row 1: name + phone */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-sans font-semibold text-[var(--ink)] mb-1.5 tracking-wide uppercase">
+                    <label className={labelClass}>
                       Ad Soyad <span className="text-[var(--accent)]">*</span>
                     </label>
                     <input
                       type="text"
-                      required
-                      value={form.name}
-                      onChange={(e) => update("name", e.target.value)}
                       placeholder="Adınız Soyadınız"
-                      className="w-full h-11 px-4 rounded border border-[var(--border)] bg-[var(--white)] text-[var(--ink)] text-sm font-sans placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors"
+                      className={errors.customerName ? inputErrorClass : inputClass}
+                      {...register("customerName")}
                     />
+                    {errors.customerName && (
+                      <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" /> {errors.customerName.message}
+                      </p>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-xs font-sans font-semibold text-[var(--ink)] mb-1.5 tracking-wide uppercase">
+                    <label className={labelClass}>
                       Telefon <span className="text-[var(--accent)]">*</span>
                     </label>
                     <input
                       type="tel"
-                      required
-                      value={form.phone}
-                      onChange={(e) => update("phone", e.target.value)}
                       placeholder="+90 5__ ___ __ __"
-                      className="w-full h-11 px-4 rounded border border-[var(--border)] bg-[var(--white)] text-[var(--ink)] text-sm font-sans placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors"
+                      className={errors.phone ? inputErrorClass : inputClass}
+                      {...register("phone")}
                     />
+                    {errors.phone && (
+                      <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" /> {errors.phone.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className="block text-xs font-sans font-semibold text-[var(--ink)] mb-1.5 tracking-wide uppercase">
+                  <label className={labelClass}>
                     E-posta <span className="text-[var(--accent)]">*</span>
                   </label>
                   <input
                     type="email"
-                    required
-                    value={form.email}
-                    onChange={(e) => update("email", e.target.value)}
                     placeholder="ornek@email.com"
-                    className="w-full h-11 px-4 rounded border border-[var(--border)] bg-[var(--white)] text-[var(--ink)] text-sm font-sans placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors"
+                    className={errors.email ? inputErrorClass : inputClass}
+                    {...register("email")}
                   />
+                  {errors.email && (
+                    <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Event type + date */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-sans font-semibold text-[var(--ink)] mb-1.5 tracking-wide uppercase">
+                    <label className={labelClass}>
                       Etkinlik Türü <span className="text-[var(--accent)]">*</span>
                     </label>
                     <select
-                      required
-                      value={form.eventType}
-                      onChange={(e) => update("eventType", e.target.value)}
-                      className="w-full h-11 px-4 rounded border border-[var(--border)] bg-[var(--white)] text-[var(--ink)] text-sm font-sans focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors appearance-none"
+                      className={`${errors.eventType ? inputErrorClass : inputClass} appearance-none`}
+                      {...register("eventType")}
                     >
                       <option value="">Seçiniz</option>
                       {eventTypes.map((t) => (
                         <option key={t} value={t}>{t}</option>
                       ))}
                     </select>
+                    {errors.eventType && (
+                      <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" /> {errors.eventType.message}
+                      </p>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-xs font-sans font-semibold text-[var(--ink)] mb-1.5 tracking-wide uppercase">
-                      Etkinlik Tarihi
-                    </label>
+                    <label className={labelClass}>Etkinlik Tarihi</label>
                     <input
                       type="date"
-                      value={form.eventDate}
-                      onChange={(e) => update("eventDate", e.target.value)}
-                      className="w-full h-11 px-4 rounded border border-[var(--border)] bg-[var(--white)] text-[var(--ink)] text-sm font-sans focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors"
+                      className={inputClass}
+                      {...register("eventDate")}
                     />
                   </div>
                 </div>
@@ -200,45 +235,37 @@ export function QuotePage() {
                 {/* Guest count + location */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-sans font-semibold text-[var(--ink)] mb-1.5 tracking-wide uppercase">
-                      Tahmini Kişi Sayısı
-                    </label>
+                    <label className={labelClass}>Tahmini Kişi Sayısı</label>
                     <input
                       type="number"
                       min="1"
-                      value={form.guestCount}
-                      onChange={(e) => update("guestCount", e.target.value)}
                       placeholder="50"
-                      className="w-full h-11 px-4 rounded border border-[var(--border)] bg-[var(--white)] text-[var(--ink)] text-sm font-sans placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors"
+                      className={inputClass}
+                      {...register("guestCount")}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-sans font-semibold text-[var(--ink)] mb-1.5 tracking-wide uppercase">
-                      Etkinlik Yeri / Şehir
-                    </label>
+                    <label className={labelClass}>Etkinlik Yeri / Şehir</label>
                     <input
                       type="text"
-                      value={form.location}
-                      onChange={(e) => update("location", e.target.value)}
                       placeholder="İstanbul, Bağcılar..."
-                      className="w-full h-11 px-4 rounded border border-[var(--border)] bg-[var(--white)] text-[var(--ink)] text-sm font-sans placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors"
+                      className={inputClass}
+                      {...register("location")}
                     />
                   </div>
                 </div>
 
                 {/* Budget */}
                 <div>
-                  <label className="block text-xs font-sans font-semibold text-[var(--ink)] mb-1.5 tracking-wide uppercase">
-                    Bütçe Aralığı
-                  </label>
+                  <label className={labelClass}>Bütçe Aralığı</label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {budgetRanges.map((b) => (
                       <button
                         key={b}
                         type="button"
-                        onClick={() => update("budget", form.budget === b ? "" : b)}
+                        onClick={() => setValue("budget", selectedBudget === b ? "" : b)}
                         className={`px-3 py-2.5 rounded border text-xs font-sans text-left transition-all duration-150 ${
-                          form.budget === b
+                          selectedBudget === b
                             ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] font-medium"
                             : "border-[var(--border)] text-[var(--ink-light)] hover:border-[var(--accent)]/40"
                         }`}
@@ -251,19 +278,36 @@ export function QuotePage() {
 
                 {/* Message */}
                 <div>
-                  <label className="block text-xs font-sans font-semibold text-[var(--ink)] mb-1.5 tracking-wide uppercase">
-                    Mesajınız / Notlar
-                  </label>
+                  <label className={labelClass}>Mesajınız / Notlar</label>
                   <textarea
                     rows={4}
-                    value={form.message}
-                    onChange={(e) => update("message", e.target.value)}
                     placeholder="Etkinliğiniz hakkında bilgi verin, beklentilerinizi paylaşın..."
-                    className="w-full px-4 py-3 rounded border border-[var(--border)] bg-[var(--white)] text-[var(--ink)] text-sm font-sans placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors resize-none"
+                    className={`w-full px-4 py-3 rounded border ${
+                      errors.message ? "border-red-400" : "border-[var(--border)]"
+                    } bg-[var(--white)] text-[var(--ink)] text-sm font-sans placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors resize-none`}
+                    {...register("message")}
                   />
+                  {errors.message && (
+                    <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> {errors.message.message}
+                    </p>
+                  )}
                 </div>
 
-                <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full sm:w-auto">
+                {firebaseError && (
+                  <div className="flex items-start gap-2 p-3 rounded border border-red-200 bg-red-50 text-sm text-red-700">
+                    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                    {firebaseError}
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  loading={isSubmitting}
+                  className="w-full sm:w-auto"
+                >
                   <Send className="w-4 h-4" />
                   Teklif Talep Et
                 </Button>

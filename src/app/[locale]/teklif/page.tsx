@@ -1,5 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
-import { QuotePage } from "@/components/forms/QuotePage";
+import { QuotePageClient } from "@/components/forms/QuotePageClient";
 import { locales } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -16,5 +16,5 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <QuotePage />;
+  return <QuotePageClient />;
 }
