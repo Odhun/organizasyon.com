@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { GoldDivider } from "@/components/ui/GoldDivider";
+import { SocialLinks } from "@/components/ui/SocialLinks";
 
 const contactItems = [
   {
@@ -30,9 +31,9 @@ const contactItems = [
   {
     icon: <MapPin className="w-5 h-5" />,
     label: "Adres",
-    value: "Bağcılar Cad. No:42",
-    href: null,
-    description: "Bağcılar, İstanbul",
+    value: "Anamur, Mersin",
+    href: "https://www.google.com/maps/search/Devlet+Bah%C3%A7eli+Park%C4%B1,+Anamur,+Mersin",
+    description: "Devlet Bahçeli Parkı yakını",
   },
   {
     icon: <Clock className="w-5 h-5" />,
@@ -113,9 +114,21 @@ export function ContactPage() {
                 </StaggerItem>
               ))}
             </Stagger>
+
+            {/* Social media */}
+            <FadeIn delay={0.2} className="mt-8">
+              <p className="text-xs font-sans tracking-[0.25em] uppercase text-[var(--accent)] mb-3">
+                Sosyal Medya
+              </p>
+              <h3 className="font-serif text-xl font-semibold text-[var(--ink)] mb-3">
+                Bizi Takip Edin
+              </h3>
+              <GoldDivider className="max-w-[60px] mb-5" />
+              <SocialLinks />
+            </FadeIn>
           </div>
 
-          {/* Map placeholder */}
+          {/* Map */}
           <FadeIn delay={0.15}>
             <div className="space-y-5">
               <div>
@@ -128,28 +141,27 @@ export function ContactPage() {
                 <GoldDivider className="max-w-[80px] mb-6" />
               </div>
 
-              <div className="w-full aspect-[4/3] rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] relative overflow-hidden flex items-center justify-center">
-                <div className="text-center px-4">
-                  <MapPin className="w-10 h-10 text-[var(--accent)] mx-auto mb-3" />
-                  <p className="font-serif text-lg font-semibold text-[var(--ink)] mb-1">
-                    Bağcılar, İstanbul
-                  </p>
-                  <p className="text-sm text-[var(--muted)]">Bağcılar Cad. No:42</p>
-                  <a
-                    href="https://maps.google.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-4 text-xs font-sans text-[var(--accent)] hover:underline"
-                  >
-                    Google Maps&apos;te Aç →
-                  </a>
-                </div>
-                {/* Decorative grid */}
-                <div className="absolute inset-0 opacity-5" style={{
-                  backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`,
-                  backgroundSize: "40px 40px"
-                }} />
+              <div className="w-full aspect-[4/3] rounded-xl overflow-hidden border border-[var(--border)] relative">
+                <iframe
+                  src="https://maps.google.com/maps?q=Devlet+Bah%C3%A7eli+Park%C4%B1,+Anamur,+Mersin&output=embed&z=16"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Konum"
+                />
               </div>
+              <a
+                href="https://www.google.com/maps/search/Devlet+Bah%C3%A7eli+Park%C4%B1,+Anamur,+Mersin"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-sans text-[var(--accent)] hover:underline"
+              >
+                <MapPin className="w-3.5 h-3.5" />
+                Google Maps&apos;te Aç →
+              </a>
 
               <div className="bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-xl p-5">
                 <p className="text-sm font-sans font-medium text-[var(--ink)] mb-1">💡 Hızlı Yanıt</p>

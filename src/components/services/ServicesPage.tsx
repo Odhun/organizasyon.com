@@ -12,6 +12,7 @@ import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { Button } from "@/components/ui/Button";
 import { mockServices } from "@/lib/mock-data";
+import type { DisplayService } from "@/lib/data";
 
 const icons: Record<string, React.ReactNode> = {
   Heart: <Heart className="w-7 h-7" />,
@@ -20,11 +21,26 @@ const icons: Record<string, React.ReactNode> = {
   GraduationCap: <GraduationCap className="w-7 h-7" />,
 };
 
-export function ServicesPage() {
+const mockFallback: DisplayService[] = mockServices.map((s) => ({
+  slug: s.slug,
+  category: s.category,
+  title: s.title,
+  shortDescription: s.shortDescription,
+  description: s.description,
+  features: s.features,
+  priceRange: s.priceRange,
+  coverImage: s.coverImage,
+  gradient: s.gradient,
+  icon: s.icon,
+}));
+
+export function ServicesPage({ initialServices }: { initialServices?: DisplayService[] }) {
   const t = useTranslations("services");
   const params = useParams();
   const locale = (params?.locale as string) ?? "tr";
   const [active, setActive] = useState("all");
+
+  const services = initialServices ?? mockFallback;
 
   const categoryLabels: Record<string, string> = {
     all: t("categories.all"),
@@ -35,8 +51,8 @@ export function ServicesPage() {
   };
 
   const filtered = active === "all"
-    ? mockServices
-    : mockServices.filter((s) => s.category === active);
+    ? services
+    : services.filter((s) => s.category === active);
 
   return (
     <>

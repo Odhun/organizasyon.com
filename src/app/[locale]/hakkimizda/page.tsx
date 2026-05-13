@@ -11,8 +11,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: locale === "tr" ? "Hakkımızda | Odhun Organizasyon" : "About Us | Odhun Organization",
     description: locale === "tr"
-      ? "15 yılı aşkın deneyimle İstanbul'un en güvenilir etkinlik organizasyon firması."
-      : "Istanbul's most trusted event organization company with over 15 years of experience.",
+      ? "15 yılı aşkın deneyimle Anamur'un en güvenilir etkinlik organizasyon firması."
+      : "Anamur's most trusted event organization company with over 15 years of experience.",
   };
 }
 

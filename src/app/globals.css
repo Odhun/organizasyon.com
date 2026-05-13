@@ -111,3 +111,24 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--accent-soft);
   color: var(--surface-dark);
 }
+
+/* ─── YAZI TİPİ İNCELİKLERİ ─────────────────────────────────────────── */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* ─── BAĞLANTI GEÇIŞLERI ─────────────────────────────────────────────── */
+a {
+  transition-property: color, opacity, border-color;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+/* ─── GÖRÜNTÜ KALİTESİ ───────────────────────────────────────────────── */
+img {
+  image-rendering: auto;
+}

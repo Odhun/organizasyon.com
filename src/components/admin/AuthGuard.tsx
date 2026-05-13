@@ -17,10 +17,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (user === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#111827' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0F172A' }}>
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-gray-400 text-sm">Yükleniyor...</p>
+          <div className="w-8 h-8 border-2 border-[#E11D48] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-white/40 text-sm">Yükleniyor...</p>
         </div>
       </div>
     )

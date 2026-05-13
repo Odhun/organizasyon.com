@@ -9,21 +9,30 @@ import { FadeIn } from "@/components/motion/FadeIn";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { mockGallery } from "@/lib/mock-data";
+import type { DisplayGalleryItem } from "@/lib/data";
 
-const categories = ["Tümü", "Düğün", "Nişan", "Kına", "Doğum Günü", "Baby Shower", "Kurumsal", "Mezuniyet", "Sünnet"];
+const DEFAULT_CATEGORIES = ["Tümü", "Düğün", "Nişan", "Kına", "Doğum Günü", "Baby Shower", "Kurumsal", "Mezuniyet", "Sünnet"];
 
-export function GalleryPage() {
+const mockFallback: DisplayGalleryItem[] = mockGallery.map((g) => ({
+  id: g.id, title: g.title, category: g.category, imageUrl: g.imageUrl, year: g.year,
+}));
+
+export function GalleryPage({ initialItems }: { initialItems?: DisplayGalleryItem[] }) {
   const t = useTranslations("gallery");
   const [activeCategory, setActiveCategory] = useState("Tümü");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+  const allItems = initialItems ?? mockFallback;
+  const dynamicCategories = ["Tümü", ...Array.from(new Set(allItems.map((g) => g.category)))];
+  const categories = initialItems ? dynamicCategories : DEFAULT_CATEGORIES;
+
   const filtered = activeCategory === "Tümü"
-    ? mockGallery
-    : mockGallery.filter((g) => g.category === activeCategory);
+    ? allItems
+    : allItems.filter((g) => g.category === activeCategory);
 
   const closeLightbox = () => setLightboxIndex(null);
-  const prev = () => setLightboxIndex((i) => (i !== null ? (i - 1 + filtered.length) % filtered.length : null));
-  const next = () => setLightboxIndex((i) => (i !== null ? (i + 1) % filtered.length : null));
+  const prev = () => setLightboxIndex((idx) => (idx !== null ? (idx - 1 + filtered.length) % filtered.length : null));
+  const next = () => setLightboxIndex((idx) => (idx !== null ? (idx + 1) % filtered.length : null));
 
   return (
     <>
@@ -73,10 +82,10 @@ export function GalleryPage() {
                 <img
                   src={item.imageUrl}
                   alt={item.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-[var(--surface-dark)]/20 group-hover:bg-[var(--surface-dark)]/55 transition-all duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20 transition-all duration-300" />
 
                 <div className="absolute inset-0 flex flex-col justify-between p-3 sm:p-4">
                   <div className="flex justify-end">
@@ -84,11 +93,11 @@ export function GalleryPage() {
                       {item.year}
                     </span>
                   </div>
-                  <div className="translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <div>
                     <span className="text-[10px] sm:text-xs font-sans bg-[var(--accent)] text-[var(--surface-dark)] px-2 py-0.5 rounded font-medium">
                       {item.category}
                     </span>
-                    <p className="text-white text-xs sm:text-sm font-sans font-medium mt-1.5 line-clamp-2 text-left">
+                    <p className="text-white text-xs sm:text-sm font-sans font-medium mt-1.5 line-clamp-2 text-left [text-shadow:0_1px_4px_rgba(0,0,0,0.8)]">
                       {item.title}
                     </p>
                   </div>

@@ -9,8 +9,10 @@ export function LocaleSwitcher() {
   const locale = (params?.locale as string) ?? "tr";
   const target = locale === "tr" ? "en" : "tr";
 
-  // Replace current locale segment in path
-  const newPath = pathname.replace(/^\/(tr|en)/, `/${target}`);
+  // localePrefix: 'as-needed' — TR has no prefix, EN has /en prefix
+  const newPath = locale === "tr"
+    ? `/en${pathname}`
+    : pathname.replace(/^\/en/, "") || "/";
 
   return (
     <Link

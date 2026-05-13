@@ -1,12 +1,27 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getAllTestimonials, approveTestimonial, rejectTestimonial, deleteTestimonial } from '@/lib/firebase/testimonials'
+import { getAllTestimonials, approveTestimonial, rejectTestimonial, deleteTestimonial, updateTestimonial } from '@/lib/firebase/testimonials'
 import type { Testimonial } from '@/types/models'
+
+const EVENT_TYPES = ['Düğün', 'Nişan', 'Kına', 'Doğum Günü', 'Baby Shower', 'Kurumsal', 'Açılış', 'Mezuniyet', 'Sünnet', 'Diğer']
+
+type EditForm = {
+  customerName: string
+  eventType: string
+  rating: 1 | 2 | 3 | 4 | 5
+  commentTr: string
+  commentEn: string
+  approved: boolean
+}
 
 export default function YorumlarPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'pending' | 'approved' | 'all'>('pending')
+  const [editTarget, setEditTarget] = useState<Testimonial | null>(null)
+  const [form, setForm] = useState<EditForm>({ customerName: '', eventType: '', rating: 5, commentTr: '', commentEn: '', approved: false })
+  const [saving, setSaving] = useState(false)
+  const [hoverRating, setHoverRating] = useState(0)
 
   useEffect(() => { load() }, [])
 
@@ -15,6 +30,29 @@ export default function YorumlarPage() {
     const data = await getAllTestimonials()
     setTestimonials(data)
     setLoading(false)
+  }
+
+  function openEdit(t: Testimonial) {
+    setForm({ customerName: t.customerName, eventType: t.eventType, rating: t.rating, commentTr: t.comment.tr, commentEn: t.comment.en ?? '', approved: t.approved })
+    setEditTarget(t)
+  }
+
+  function closeEdit() { setEditTarget(null) }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    if (!editTarget) return
+    setSaving(true)
+    await updateTestimonial(editTarget.id, {
+      customerName: form.customerName,
+      eventType: form.eventType,
+      rating: form.rating,
+      comment: { tr: form.commentTr, en: form.commentEn || undefined },
+      approved: form.approved,
+    })
+    await load()
+    closeEdit()
+    setSaving(false)
   }
 
   async function handleApprove(id: string) {
@@ -39,6 +77,9 @@ export default function YorumlarPage() {
     return true
   })
 
+  const ic = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#E11D48] transition-colors"
+  const lc = "block text-sm font-medium text-gray-700 mb-1"
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Müşteri Yorumları</h1>
@@ -54,7 +95,7 @@ export default function YorumlarPage() {
             onClick={() => setFilter(key as typeof filter)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               filter === key
-                ? 'bg-[#C9A84C] text-gray-900'
+                ? 'bg-[#E11D48] text-white'
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
             }`}
           >
@@ -88,8 +129,15 @@ export default function YorumlarPage() {
                     {'★'.repeat(t.rating)}{'☆'.repeat(5 - t.rating)}
                   </div>
                   <p className="text-gray-600 text-sm leading-relaxed">{t.comment.tr}</p>
+                  {t.comment.en && <p className="text-gray-400 text-xs mt-1 italic">{t.comment.en}</p>}
                 </div>
                 <div className="flex flex-col gap-2 shrink-0">
+                  <button
+                    onClick={() => openEdit(t)}
+                    className="px-3 py-1.5 bg-[#E11D48] text-white hover:bg-[#BE123C] rounded-lg text-xs font-medium transition-colors"
+                  >
+                    Düzenle
+                  </button>
                   {!t.approved ? (
                     <button
                       onClick={() => handleApprove(t.id)}
@@ -115,6 +163,70 @@ export default function YorumlarPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Edit modal */}
+      {editTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-lg font-bold text-gray-900">Yorumu Düzenle</h2>
+                <button onClick={closeEdit} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">✕</button>
+              </div>
+              <form onSubmit={handleSave} className="space-y-4">
+                <div>
+                  <label className={lc}>Müşteri Adı</label>
+                  <input value={form.customerName} onChange={(e) => setForm({ ...form, customerName: e.target.value })} required className={ic} />
+                </div>
+                <div>
+                  <label className={lc}>Etkinlik Türü</label>
+                  <select value={form.eventType} onChange={(e) => setForm({ ...form, eventType: e.target.value })} className={ic}>
+                    {EVENT_TYPES.map((et) => <option key={et} value={et}>{et}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={lc}>Puan</label>
+                  <div className="flex gap-1 mt-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        onClick={() => setForm({ ...form, rating: star as 1 | 2 | 3 | 4 | 5 })}
+                        className="text-2xl transition-colors"
+                      >
+                        <span className={(hoverRating || form.rating) >= star ? 'text-yellow-400' : 'text-gray-300'}>★</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className={lc}>Yorum (TR)</label>
+                  <textarea value={form.commentTr} onChange={(e) => setForm({ ...form, commentTr: e.target.value })} required rows={3} className={ic} />
+                </div>
+                <div>
+                  <label className={lc}>Yorum (EN) — isteğe bağlı</label>
+                  <textarea value={form.commentEn} onChange={(e) => setForm({ ...form, commentEn: e.target.value })} rows={3} className={ic} />
+                </div>
+                <div className="flex items-center gap-3">
+                  <button type="button" onClick={() => setForm({ ...form, approved: !form.approved })}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${form.approved ? 'bg-[#E11D48]' : 'bg-gray-200'}`}>
+                    <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.approved ? 'translate-x-7' : 'translate-x-1'}`} />
+                  </button>
+                  <span className="text-sm font-medium text-gray-700">Onaylı</span>
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button type="button" onClick={closeEdit} className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors">İptal</button>
+                  <button type="submit" disabled={saving} className="flex-1 bg-[#E11D48] hover:bg-[#BE123C] text-white font-semibold rounded-lg py-2.5 text-sm transition-colors disabled:opacity-50">
+                    {saving ? 'Kaydediliyor...' : 'Güncelle'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
     </div>

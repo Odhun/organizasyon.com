@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { TestimonialsPage } from "@/components/testimonials/TestimonialsPage";
+import { fetchTestimonials } from "@/lib/data";
 import { locales } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -16,5 +17,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <TestimonialsPage />;
+  const testimonials = await fetchTestimonials(locale);
+  return <TestimonialsPage testimonials={testimonials} />;
 }

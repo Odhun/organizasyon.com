@@ -1,14 +1,19 @@
-import Link from "next/link";
 import { Star, Quote } from "lucide-react";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { GoldDivider } from "@/components/ui/GoldDivider";
-import { Button } from "@/components/ui/Button";
 import { mockTestimonials } from "@/lib/mock-data";
+import type { DisplayTestimonial } from "@/lib/data";
+import { TestimonialForm } from "./TestimonialForm";
 
-export function TestimonialsPage() {
+const mockFallback: DisplayTestimonial[] = mockTestimonials.map((t) => ({
+  name: t.name, event: t.event, comment: t.comment, rating: t.rating, date: t.date,
+}));
+
+export function TestimonialsPage({ testimonials }: { testimonials?: DisplayTestimonial[] }) {
+  const list = testimonials ?? mockFallback;
   return (
     <>
       {/* Hero */}
@@ -57,8 +62,8 @@ export function TestimonialsPage() {
         </FadeIn>
 
         <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockTestimonials.map((t) => (
-            <StaggerItem key={t.name}>
+          {list.map((t, i) => (
+            <StaggerItem key={t.name ?? i}>
               <div className="p-6 sm:p-7 rounded-xl border border-[var(--border)] bg-[var(--white)] hover:border-[var(--accent)]/40 hover:shadow-md transition-all duration-300 h-full flex flex-col relative">
                 {/* Quote icon */}
                 <Quote className="absolute top-5 right-5 w-8 h-8 text-[var(--accent)]/10" />
@@ -93,20 +98,22 @@ export function TestimonialsPage() {
         </Stagger>
       </Section>
 
-      {/* CTA */}
-      <div className="bg-[var(--bg-alt)] border-t border-[var(--border)] py-12">
+      {/* Yorum Formu */}
+      <div className="bg-[var(--bg-alt)] border-t border-[var(--border)] py-16">
         <Container size="md">
-          <FadeIn className="text-center">
-            <p className="font-serif text-2xl md:text-3xl font-semibold text-[var(--ink)] mb-3">
-              Siz de Bu Listede Yerinizi Alın
+          <FadeIn className="text-center mb-10">
+            <p className="text-xs font-sans tracking-[0.25em] uppercase text-[var(--accent)] mb-3">
+              Deneyiminizi Paylaşın
             </p>
-            <p className="text-[var(--ink-light)] text-sm mb-6 max-w-md mx-auto leading-relaxed">
-              Hayalinizdeki etkinliği birlikte planlayalım ve mutlu müşterilerimiz arasına katılın.
+            <h2 className="font-serif text-2xl md:text-3xl font-semibold text-[var(--ink)] mb-3">
+              Siz de Yorum Bırakın
+            </h2>
+            <GoldDivider className="max-w-[60px] mx-auto mb-4" />
+            <p className="text-[var(--ink-light)] text-sm max-w-md mx-auto leading-relaxed">
+              Bizimle çalıştıysanız deneyiminizi paylaşın. Yorumunuz inceleme sonrası yayınlanır.
             </p>
-            <Link href="/teklif">
-              <Button variant="primary" size="lg">Ücretsiz Teklif Al</Button>
-            </Link>
           </FadeIn>
+          <TestimonialForm />
         </Container>
       </div>
     </>

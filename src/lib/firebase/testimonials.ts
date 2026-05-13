@@ -38,6 +38,10 @@ export async function createTestimonial(data: Omit<Testimonial, "id" | "createdA
   });
 }
 
+export async function updateTestimonial(id: string, data: Partial<Omit<Testimonial, "id" | "createdAt">>) {
+  return updateDoc(doc(db, COL, id), data);
+}
+
 export async function approveTestimonial(id: string) {
   return updateDoc(doc(db, COL, id), { approved: true });
 }

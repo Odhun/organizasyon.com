@@ -5,6 +5,7 @@ import { ServicesPreview } from "@/components/home/ServicesPreview";
 import { GalleryStrip } from "@/components/home/GalleryStrip";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { CtaSection } from "@/components/home/CtaSection";
+import { fetchServices, fetchGalleryItems, fetchTestimonials } from "@/lib/data";
 import { locales } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -16,8 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: locale === "tr" ? "Odhun Organizasyon | Profesyonel Etkinlik Yönetimi" : "Odhun Organization | Professional Event Management",
     description: locale === "tr"
-      ? "İstanbul'da düğün, nişan, doğum günü, kurumsal ve tüm özel etkinlikler için profesyonel organizasyon hizmeti."
-      : "Professional event organization for weddings, engagements, birthdays, corporate events and all special occasions in Istanbul.",
+      ? "Anamur'da düğün, nişan, doğum günü, kurumsal ve tüm özel etkinlikler için profesyonel organizasyon hizmeti."
+      : "Professional event organization for weddings, engagements, birthdays, corporate events and all special occasions in Anamur.",
   };
 }
 
@@ -25,13 +26,19 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   setRequestLocale(locale);
 
+  const [services, galleryItems, testimonials] = await Promise.all([
+    fetchServices(locale),
+    fetchGalleryItems(locale),
+    fetchTestimonials(locale),
+  ]);
+
   return (
     <>
       <HeroSection />
       <StatsSection />
-      <ServicesPreview />
-      <GalleryStrip />
-      <TestimonialsSection />
+      <ServicesPreview services={services} />
+      <GalleryStrip items={galleryItems} />
+      <TestimonialsSection testimonials={testimonials} />
       <CtaSection />
     </>
   );

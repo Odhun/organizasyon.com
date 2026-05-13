@@ -3,6 +3,11 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner";
+import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
+import { WhatsAppFloat } from "@/components/ui/WhatsAppFloat";
+import { CookieConsent } from "@/components/ui/CookieConsent";
+import { getSiteSettings } from "@/lib/firebase/siteSettings";
 import { locales } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -23,13 +28,21 @@ export default async function LocaleLayout({
   }
 
   setRequestLocale(locale);
-  const messages = await getMessages();
+  const [messages, settings] = await Promise.all([
+    getMessages(),
+    getSiteSettings().catch(() => null),
+  ]);
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <Header />
-      <main className="pt-16">{children}</main>
-      <Footer />
+      <SiteSettingsProvider settings={settings}>
+        <AnnouncementBanner />
+        <Header />
+        <main className="pt-16">{children}</main>
+        <Footer />
+        <WhatsAppFloat />
+        <CookieConsent />
+      </SiteSettingsProvider>
     </NextIntlClientProvider>
   );
 }

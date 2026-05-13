@@ -7,61 +7,82 @@ import { useParams } from "next/navigation";
 import { Section } from "@/components/ui/Section";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
-import { GoldDivider } from "@/components/ui/GoldDivider";
 import { mockGallery } from "@/lib/mock-data";
+import type { DisplayGalleryItem } from "@/lib/data";
 
-export function GalleryStrip() {
+const mockFallback: DisplayGalleryItem[] = mockGallery.map((g) => ({
+  id: g.id, title: g.title, category: g.category, imageUrl: g.imageUrl, year: g.year,
+}));
+
+export function GalleryStrip({ items }: { items?: DisplayGalleryItem[] }) {
   const t = useTranslations("gallery");
   const params = useParams();
   const locale = (params?.locale as string) ?? "tr";
-  const items = mockGallery.slice(0, 6);
+  const list = (items ?? mockFallback).slice(0, 5);
 
   return (
     <Section bg="alt" id="galeri">
-      <FadeIn className="text-center mb-4">
-        <p className="text-xs font-sans tracking-[0.25em] uppercase text-[var(--accent)] mb-3">
-          {t("sectionBadge")}
-        </p>
-        <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[var(--ink)]">
-          {t("sectionTitle")}
-          <br />
-          <span className="text-[var(--surface-dark)]">{t("sectionTitleAccent")}</span>
-        </h2>
+      {/* Section header — editorial */}
+      <FadeIn className="mb-10">
+        <div className="flex items-end justify-between gap-6">
+          <div>
+            <p className="text-[10px] font-sans tracking-[0.35em] uppercase text-[var(--accent)] mb-3">
+              {t("sectionBadge")}
+            </p>
+            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[var(--ink)] leading-tight">
+              {t("sectionTitle")}
+              <br />
+              <span className="italic text-[var(--surface-dark)]">{t("sectionTitleAccent")}</span>
+            </h2>
+          </div>
+          <Link
+            href={`/${locale}/galeri`}
+            className="hidden md:inline-flex items-center gap-2 text-sm font-sans text-[var(--accent)] hover:text-[var(--surface-dark)] transition-colors duration-200 border-b border-[var(--accent)]/30 hover:border-[var(--surface-dark)]/40 pb-0.5 shrink-0 mb-1"
+          >
+            {t("sectionViewAll")} <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+        <div className="mt-7 h-px bg-[var(--border)]" />
       </FadeIn>
 
-      <FadeIn delay={0.1}>
-        <GoldDivider className="max-w-xs mx-auto mb-12" />
-      </FadeIn>
-
+      {/* Asymmetric grid: first image wider */}
       <Stagger className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-        {items.map((item) => (
-          <StaggerItem key={item.id}>
-            <Link href={`/${locale}/galeri`} className="group block relative overflow-hidden rounded-lg aspect-[4/3]">
-              {/* Real image */}
+        {list.map((item, i) => (
+          <StaggerItem key={item.id} className={i === 0 ? "col-span-2 md:col-span-2" : ""}>
+            <Link
+              href={`/${locale}/galeri`}
+              className={`group block relative overflow-hidden rounded ${
+                i === 0 ? "aspect-[16/9]" : "aspect-[4/3]"
+              } cursor-pointer`}
+            >
               <img
                 src={item.imageUrl}
                 alt={item.title}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 loading="lazy"
               />
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-[var(--surface-dark)]/30 group-hover:bg-[var(--surface-dark)]/55 transition-all duration-300" />
-              {/* Category label */}
+              {/* Overlay — subtle, more visible on hover */}
+              <div className="absolute inset-0 bg-[var(--surface-dark)]/20 group-hover:bg-[var(--surface-dark)]/45 transition-all duration-400" />
+              {/* Category — always visible on large item, hover-only on small */}
               <div className="absolute inset-0 flex items-end p-3 sm:p-4">
-                <span className="text-white text-xs sm:text-sm font-sans font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 bg-[var(--accent)] text-[var(--surface-dark)] px-2 py-0.5 rounded">
+                <span className={`text-white text-xs font-sans font-medium bg-[var(--accent)] text-[var(--surface-dark)] px-2.5 py-1 rounded-sm transition-all duration-300 ${
+                  i === 0
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
+                }`}>
                   {item.category}
                 </span>
               </div>
-              <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-lg" />
             </Link>
           </StaggerItem>
         ))}
       </Stagger>
 
-      <FadeIn delay={0.3} className="text-center mt-10">
+      {/* Mobile: view all below */}
+      <FadeIn delay={0.3} className="text-center mt-9 md:hidden">
         <Link
           href={`/${locale}/galeri`}
-          className="inline-flex items-center gap-2 text-sm font-sans text-[var(--accent)] hover:text-[var(--surface-dark)] transition-colors border-b border-[var(--accent)]/40 hover:border-[var(--surface-dark)]/40 pb-0.5"
+          className="inline-flex items-center gap-2 text-sm font-sans text-[var(--accent)] hover:text-[var(--surface-dark)] transition-colors duration-200 border-b border-[var(--accent)]/30 hover:border-[var(--surface-dark)]/40 pb-0.5"
         >
           {t("sectionViewAll")} <ArrowRight className="w-3.5 h-3.5" />
         </Link>

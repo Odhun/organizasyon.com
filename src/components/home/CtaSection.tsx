@@ -13,37 +13,41 @@ export function CtaSection() {
   const locale = (params?.locale as string) ?? "tr";
 
   return (
-    <section className="bg-[var(--surface-dark)] py-20 md:py-28 relative overflow-hidden">
+    <section className="bg-[var(--bg-alt)] py-20 md:py-28 relative overflow-hidden">
+      {/* Thin border lines top/bottom */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-[var(--border)]" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-[var(--border)]" />
+
+      {/* Decorative background brand name — very subtle */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{ backgroundImage: `radial-gradient(var(--accent) 1px, transparent 1px)`, backgroundSize: "32px 32px" }}
-      />
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/30 to-transparent" />
+        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden"
+        aria-hidden
+      >
+        <span className="font-serif text-[clamp(80px,18vw,220px)] font-semibold text-[var(--accent)]/[0.04] whitespace-nowrap leading-none tracking-tight">
+          Odhun
+        </span>
+      </div>
 
       <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 text-center">
         <FadeIn>
-          <p className="text-xs font-sans tracking-[0.25em] uppercase text-[var(--accent)] mb-4">
+          <p className="text-[10px] font-sans tracking-[0.4em] uppercase text-[var(--accent)] mb-5">
             {t("badge")}
           </p>
-          <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 leading-tight">
+          <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[var(--ink)] mb-5 leading-tight">
             {t("title1")}
             <br />
-            {t("title2")}
+            <span className="italic">{t("title2")}</span>
           </h2>
-          <p className="text-white/50 text-base font-sans mb-10 leading-relaxed max-w-xl mx-auto">
+          <p className="text-[var(--muted)] text-base font-sans mb-11 leading-relaxed max-w-xl mx-auto font-light">
             {t("subtitle")}
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">
             <Link href={`/${locale}/teklif`}>
-              <Button variant="primary" size="lg">{t("quoteForm")}</Button>
+              <Button variant="dark" size="lg">{t("quoteForm")}</Button>
             </Link>
             <a href="tel:+905321234567">
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white/30 text-white hover:bg-white/10 hover:border-white/50"
-              >
+              <Button variant="outline" size="lg">
                 <Phone className="w-4 h-4" />
                 {t("callNow")}
               </Button>

@@ -55,7 +55,7 @@ export default function RezervasyonlarPage() {
             onClick={() => setFilter(s)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               filter === s
-                ? 'bg-[#C9A84C] text-gray-900'
+                ? 'bg-[#E11D48] text-gray-900'
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
             }`}
           >
@@ -102,7 +102,7 @@ export default function RezervasyonlarPage() {
                   <td className="px-4 py-4">
                     <button
                       onClick={() => { setSelected(r); setNotes(r.internalNotes ?? '') }}
-                      className="text-[#C9A84C] hover:text-[#b8963e] text-sm font-medium"
+                      className="text-[#E11D48] hover:text-[#D52068] text-sm font-medium"
                     >
                       Detay
                     </button>
@@ -150,7 +150,7 @@ export default function RezervasyonlarPage() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#C9A84C] transition-colors"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#E11D48] transition-colors"
                   placeholder="Sadece siz görebilirsiniz..."
                 />
               </div>

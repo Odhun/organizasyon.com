@@ -8,12 +8,16 @@ import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { cn } from "@/lib/utils/cn";
+import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 
 export function Header() {
   const t = useTranslations("nav");
   const tc = useTranslations("common");
   const params = useParams();
   const locale = (params?.locale as string) ?? "tr";
+
+  const settings = useSiteSettings();
+  const phone = settings?.contact?.phone ?? "+90 532 123 45 67";
 
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -35,9 +39,9 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-40 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-40 transition-all duration-500",
         scrolled
-          ? "bg-[var(--surface-dark)]/95 backdrop-blur-md shadow-lg"
+          ? "bg-[var(--surface-dark)]/96 backdrop-blur-md shadow-[0_1px_0_rgba(0,0,0,0.2)]"
           : "bg-[var(--surface-dark)]"
       )}
     >
@@ -54,24 +58,24 @@ export function Header() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-0.5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="relative px-3 py-2 text-sm font-sans text-white/70 hover:text-[var(--accent)] transition-colors group"
+                className="relative px-3.5 py-2 text-[13px] font-sans font-light tracking-wide text-white/60 hover:text-[var(--accent)] transition-colors duration-200 group"
               >
                 {link.label}
-                <span className="absolute bottom-1 left-3 right-3 h-px bg-[var(--accent)] scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+                <span className="absolute bottom-1 left-3.5 right-3.5 h-px bg-[var(--accent)] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </Link>
             ))}
           </nav>
 
           {/* Desktop right */}
           <div className="hidden md:flex items-center gap-3">
-            <a href="tel:+905321234567" className="flex items-center gap-1.5 text-xs font-sans text-white/50 hover:text-[var(--accent)] transition-colors">
+            <a href={`tel:${phone.replace(/\s/g, "")}`} className="flex items-center gap-1.5 text-xs font-sans text-white/50 hover:text-[var(--accent)] transition-colors">
               <Phone className="w-3.5 h-3.5" />
-              <span>+90 532 123 45 67</span>
+              <span>{phone}</span>
             </a>
             <LocaleSwitcher />
             <Link href={`/${locale}/teklif`}>
@@ -108,8 +112,8 @@ export function Header() {
               </Link>
             ))}
             <div className="pt-2 pb-1 border-t border-white/10 flex flex-col gap-2">
-              <a href="tel:+905321234567" className="flex items-center gap-2 px-3 py-2 text-sm text-white/50">
-                <Phone className="w-4 h-4" /> +90 532 123 45 67
+              <a href={`tel:${phone.replace(/\s/g, "")}`} className="flex items-center gap-2 px-3 py-2 text-sm text-white/50">
+                <Phone className="w-4 h-4" /> {phone}
               </a>
               <Link href={`/${locale}/teklif`} onClick={() => setOpen(false)}>
                 <Button variant="primary" size="sm" className="w-full">{tc("getQuote")}</Button>

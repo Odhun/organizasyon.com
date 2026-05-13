@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { ServicesPage } from "@/components/services/ServicesPage";
+import { fetchServices } from "@/lib/data";
 import { locales } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -19,5 +20,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <ServicesPage />;
+  const services = await fetchServices(locale);
+  return <ServicesPage initialServices={services} />;
 }
