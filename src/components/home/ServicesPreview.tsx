@@ -1,52 +1,38 @@
+"use client";
+
 import Link from "next/link";
 import { Heart, Gift, Briefcase, GraduationCap, ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { Section } from "@/components/ui/Section";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { GoldDivider } from "@/components/ui/GoldDivider";
+import { mockServices } from "@/lib/mock-data";
 
-const services = [
-  {
-    icon: Heart,
-    title: "Düğün & Nişan",
-    description: "Kına, nişan ve düğün törenlerinizi en özel anınıza yakışır şekilde planlıyoruz.",
-    slug: "dugun-nisan",
-    color: "from-rose-100/50 to-transparent",
-  },
-  {
-    icon: Gift,
-    title: "Doğum Günü & Baby Shower",
-    description: "Çocuk ve bebek partilerinden yetişkin doğum günlerine kadar unutulmaz kutlamalar.",
-    slug: "dogum-gunu",
-    color: "from-[var(--accent-light)] to-transparent",
-  },
-  {
-    icon: Briefcase,
-    title: "Kurumsal Etkinlikler",
-    description: "Lansman, açılış, toplantı ve gala akşam yemekleri için kurumsal organizasyon.",
-    slug: "kurumsal",
-    color: "from-sky-100/50 to-transparent",
-  },
-  {
-    icon: GraduationCap,
-    title: "Mezuniyet & Sünnet",
-    description: "Sünnet töreni ve mezuniyet partileri için eksiksiz organizasyon paketi.",
-    slug: "mezuniyet-sunnet",
-    color: "from-emerald-100/50 to-transparent",
-  },
+const icons = [Heart, Gift, Briefcase, GraduationCap];
+const colors = [
+  "from-rose-100/50 to-transparent",
+  "from-[var(--accent-light)] to-transparent",
+  "from-sky-100/50 to-transparent",
+  "from-emerald-100/50 to-transparent",
 ];
 
 export function ServicesPreview() {
+  const t = useTranslations("services");
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "tr";
+
   return (
     <Section id="hizmetler">
       <FadeIn className="text-center mb-4">
         <p className="text-xs font-sans tracking-[0.25em] uppercase text-[var(--accent)] mb-3">
-          Hizmetlerimiz
+          {t("sectionBadge")}
         </p>
         <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[var(--ink)]">
-          Her Etkinlik İçin
+          {t("sectionTitle")}
           <br />
-          <span className="text-[var(--surface-dark)]">Özel Çözüm</span>
+          <span className="text-[var(--surface-dark)]">{t("sectionTitleAccent")}</span>
         </h2>
       </FadeIn>
 
@@ -55,26 +41,39 @@ export function ServicesPreview() {
       </FadeIn>
 
       <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {services.map((s) => {
-          const Icon = s.icon;
+        {mockServices.map((s, i) => {
+          const Icon = icons[i];
           return (
             <StaggerItem key={s.slug}>
               <Link
-                href={`/hizmetler`}
-                className="group block p-6 rounded-lg border border-[var(--border)] bg-[var(--white)] hover:border-[var(--accent)] hover:shadow-lg transition-all duration-300 h-full"
+                href={`/${locale}/hizmetler/${s.slug}`}
+                className="group block rounded-lg border border-[var(--border)] bg-[var(--white)] hover:border-[var(--accent)] hover:shadow-lg transition-all duration-300 h-full overflow-hidden"
               >
-                <div className={`w-12 h-12 rounded flex items-center justify-center bg-gradient-to-br ${s.color} mb-5`}>
-                  <Icon className="w-5 h-5 text-[var(--accent)]" />
+                {/* Cover image */}
+                {s.coverImage && (
+                  <div className="w-full h-36 overflow-hidden">
+                    <img
+                      src={s.coverImage}
+                      alt={s.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div className="p-5">
+                  <div className={`w-11 h-11 rounded flex items-center justify-center bg-gradient-to-br ${colors[i]} mb-4 -mt-7 relative z-10 border border-white shadow-sm`}>
+                    <Icon className="w-5 h-5 text-[var(--accent)]" />
+                  </div>
+                  <h3 className="font-serif text-base font-semibold text-[var(--ink)] mb-2 group-hover:text-[var(--surface-dark)] transition-colors">
+                    {s.title}
+                  </h3>
+                  <p className="text-sm text-[var(--muted)] leading-relaxed mb-3 line-clamp-2">
+                    {s.shortDescription}
+                  </p>
+                  <span className="inline-flex items-center gap-1 text-xs text-[var(--accent)] font-sans group-hover:gap-2 transition-all">
+                    {t("sectionViewAll").split(" ")[0]} <ArrowRight className="w-3 h-3" />
+                  </span>
                 </div>
-                <h3 className="font-serif text-lg font-semibold text-[var(--ink)] mb-2 group-hover:text-[var(--surface-dark)] transition-colors">
-                  {s.title}
-                </h3>
-                <p className="text-sm text-[var(--muted)] leading-relaxed mb-4">
-                  {s.description}
-                </p>
-                <span className="inline-flex items-center gap-1 text-xs text-[var(--accent)] font-sans group-hover:gap-2 transition-all">
-                  Detaylı Bilgi <ArrowRight className="w-3 h-3" />
-                </span>
               </Link>
             </StaggerItem>
           );
@@ -83,10 +82,10 @@ export function ServicesPreview() {
 
       <FadeIn delay={0.3} className="text-center mt-10">
         <Link
-          href="/hizmetler"
+          href={`/${locale}/hizmetler`}
           className="inline-flex items-center gap-2 text-sm font-sans text-[var(--accent)] hover:text-[var(--surface-dark)] transition-colors border-b border-[var(--accent)]/40 hover:border-[var(--surface-dark)]/40 pb-0.5"
         >
-          Tüm hizmetleri görüntüle <ArrowRight className="w-3.5 h-3.5" />
+          {t("sectionViewAll")} <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </FadeIn>
     </Section>

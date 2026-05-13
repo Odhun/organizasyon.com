@@ -1,14 +1,19 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Section } from "@/components/ui/Section";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 
-const stats = [
-  { number: "500+", label: "Başarılı Etkinlik" },
-  { number: "15+", label: "Yıl Deneyim" },
-  { number: "4", label: "Etkinlik Kategorisi" },
-  { number: "98%", label: "Müşteri Memnuniyeti" },
-];
-
 export function StatsSection() {
+  const t = useTranslations("stats");
+
+  const stats = [
+    { number: "500+", label: t("couples") },
+    { number: "15+", label: t("experience") },
+    { number: "1200+", label: t("events") },
+    { number: "%100", label: t("satisfaction") },
+  ];
+
   return (
     <Section bg="alt" className="py-12 md:py-14">
       <Stagger className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">

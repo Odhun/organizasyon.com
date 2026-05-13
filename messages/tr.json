@@ -1,0 +1,201 @@
+{
+  "common": {
+    "getQuote": "Teklif Al",
+    "callNow": "Hemen Ara",
+    "freeQuote": "Ücretsiz Teklif Al",
+    "viewDetails": "Detayları Gör",
+    "learnMore": "Daha Fazla",
+    "required": "*"
+  },
+  "nav": {
+    "services": "Hizmetler",
+    "gallery": "Galeri",
+    "about": "Hakkımızda",
+    "testimonials": "Yorumlar",
+    "contact": "İletişim",
+    "quote": "Teklif Al"
+  },
+  "hero": {
+    "badge": "İstanbul'un #1 Etkinlik Organizasyonu",
+    "titleLine1": "Hayalinizdeki",
+    "titleLine2": "Etkinlik",
+    "titleAccent": "Bir Adım Uzakta",
+    "subtitle": "Düğününüzden doğum gününüze, kurumsal etkinlikten mezuniyete — her organizasyonda profesyonel dokunuşu hissettiriyoruz.",
+    "cta1": "Teklif Al",
+    "cta2": "Galeriyi Keşfet",
+    "scrollHint": "Kaydırın"
+  },
+  "stats": {
+    "couples": "Mutlu Çift",
+    "experience": "Yıllık Deneyim",
+    "events": "Etkinlik",
+    "satisfaction": "Müşteri Memnuniyeti"
+  },
+  "services": {
+    "sectionBadge": "Hizmetlerimiz",
+    "sectionTitle": "Her Etkinlik İçin",
+    "sectionTitleAccent": "Özel Çözüm",
+    "sectionViewAll": "Tüm hizmetleri gör",
+    "pageBadge": "Ne Yapabiliriz?",
+    "pageTitle": "Hizmetlerimiz",
+    "pageSubtitle": "Her etkinlik türü için özel çözümler. Hayalinizdeki organizasyonu birlikte planlayalım.",
+    "detailBadge": "Hizmet Detayı",
+    "priceRange": "Fiyat Aralığı",
+    "about": "Hizmet Hakkında",
+    "included": "Neler Dahil?",
+    "otherServices": "Diğer Hizmetler",
+    "sidebarTitle": "Bu hizmet için teklif alın",
+    "sidebarSubtitle": "Aynı gün yanıt garantisiyle bütçenize özel fiyat öneriyoruz.",
+    "ctaTitle": "Hangi Hizmeti Arıyorsunuz?",
+    "ctaSubtitle": "Aradığınızı bulamadıysanız bizi arayın. Her etkinliğe özel çözüm üretiriz.",
+    "moreFeatures": "+{count} daha fazla hizmet",
+    "categories": {
+      "all": "Tümü",
+      "dugun": "Düğün & Nişan",
+      "dogum_gunu": "Doğum Günü",
+      "kurumsal": "Kurumsal",
+      "mezuniyet": "Mezuniyet & Sünnet"
+    },
+    "empty": "Bu kategoride henüz hizmet yok."
+  },
+  "gallery": {
+    "sectionBadge": "Galeri",
+    "sectionTitle": "Gerçekleştirdiğimiz",
+    "sectionTitleAccent": "Özel Anlar",
+    "sectionViewAll": "Tüm galeriyi görüntüle",
+    "pageBadge": "Çalışmalarımız",
+    "pageTitle": "Galeri",
+    "pageSubtitle": "Gerçekleştirdiğimiz özel etkinliklerden kareler. Her anın arkasında titiz bir planlama var.",
+    "empty": "Bu kategoride henüz etkinlik yok.",
+    "counter": "{current} / {total}"
+  },
+  "about": {
+    "pageBadge": "Biz Kimiz?",
+    "pageTitle": "Hakkımızda",
+    "pageSubtitle": "İstanbul'un kalbinde, 15 yıldır hayalleri gerçeğe dönüştürüyoruz.",
+    "storyBadge": "Hikayemiz",
+    "storyTitle": "Hayallerden Doğan Bir Hikaye",
+    "story1": "Odhun Organizasyon, 2009 yılında İstanbul'da küçük bir ekiple kuruldu. Kurucu ortağımız Aylin Öztürk'ün \"herkes hayalindeki etkinliği hak eder\" inancıyla başladığı bu yolculuk, bugün İstanbul'un en güvenilir organizasyon firmalarından biri haline geldi.",
+    "story2": "Yıllar içinde yüzlerce düğüne, binlerce özel ana tanıklık ettik. Her etkinlikte aynı heyecanı, aynı özveriyi ve aynı mükemmellik standartlarını koruyarak büyüdük.",
+    "story3": "Bugün 10 kişilik uzman kadromuzla düğünden kurumsala, doğum gününden sünnete kadar her türlü etkinliği İstanbul ve çevre illerde organize ediyoruz.",
+    "valuesBadge": "İlkelerimiz",
+    "valuesTitle": "Değerlerimiz",
+    "teamBadge": "Ekibimiz",
+    "teamTitle": "Arkamızdaki İnsanlar",
+    "ctaTitle": "Birlikte Çalışalım",
+    "ctaSubtitle": "Etkinliğinizi planlamak için bugün bizimle iletişime geçin.",
+    "workWithUs": "Bizimle Çalışın",
+    "values": {
+      "passion": { "title": "Tutku", "desc": "Her etkinliğe sanki kendi özel günümüzmüş gibi yaklaşır, en küçük detayı bile özenle planlarız." },
+      "excellence": { "title": "Mükemmellik", "desc": "15 yılı aşkın deneyimimizle standartlarımızı sürekli yükseltir, en iyi hizmeti sunarız." },
+      "trust": { "title": "Güven", "desc": "Müşterilerimizle şeffaf ve dürüst iletişim kurarak kalıcı ilişkiler inşa ediyoruz." },
+      "punctuality": { "title": "Dakiklik", "desc": "Programlara ve teslim tarihlerine uyum sağlamak, profesyonelliğimizin temel taşıdır." }
+    },
+    "stats": {
+      "events": "Düzenlenen Etkinlik",
+      "couples": "Mutlu Çift",
+      "experience": "Yıllık Deneyim",
+      "satisfaction": "Müşteri Memnuniyeti"
+    }
+  },
+  "testimonials": {
+    "sectionBadge": "Müşteri Yorumları",
+    "sectionTitle": "Mutlu Müşterilerimiz",
+    "sectionTitleAccent": "Ne Diyor?",
+    "pageBadge": "Deneyimler",
+    "pageTitle": "Müşteri Yorumları",
+    "pageSubtitle": "Bizi en iyi müşterilerimiz anlatır. 500'den fazla mutlu çift ve ailenin deneyimi.",
+    "happyClients": "Mutlu Müşteri",
+    "avgRating": "Ortalama Puan",
+    "recommendRate": "Tavsiye Oranı",
+    "ctaTitle": "Siz de Bu Listede Yerinizi Alın",
+    "ctaSubtitle": "Hayalinizdeki etkinliği birlikte planlayalım ve mutlu müşterilerimiz arasına katılın."
+  },
+  "contact": {
+    "pageBadge": "Ulaşın",
+    "pageTitle": "İletişim",
+    "pageSubtitle": "Sorularınız için bize ulaşın. Aynı gün yanıt garantisi veriyoruz.",
+    "infoBadge": "Bilgilerimiz",
+    "infoTitle": "Bize Ulaşın",
+    "infoText": "Etkinliğiniz hakkında bilgi almak veya teklif istemek için istediğiniz kanaldan bize ulaşabilirsiniz. Uzman ekibimiz en kısa sürede yanıt verecektir.",
+    "locationBadge": "Konum",
+    "locationTitle": "Bizi Ziyaret Edin",
+    "openMaps": "Google Maps'te Aç →",
+    "quickTip": "💡 Hızlı Yanıt",
+    "quickTipText": "Acil sorularınız için WhatsApp üzerinden yazın — genellikle 30 dakika içinde yanıt veriyoruz.",
+    "whatsapp": "WhatsApp ile Yaz",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "address": "Adres",
+    "hours": "Çalışma Saatleri",
+    "hoursValue": "Pzt–Cmt 09:00–19:00",
+    "hoursClosed": "Pazar günleri kapalıyız",
+    "phoneDesc": "Pzt–Cmt 09:00–19:00",
+    "whatsappDesc": "7/24 mesaj atabilirsiniz",
+    "emailDesc": "24 saat içinde yanıtlarız"
+  },
+  "quote": {
+    "pageBadge": "Ücretsiz",
+    "pageTitle": "Teklif Alın",
+    "pageSubtitle": "Formu doldurun, uzmanlarımız aynı gün bütçenize özel teklif hazırlasın.",
+    "name": "Ad Soyad",
+    "namePlaceholder": "Adınız Soyadınız",
+    "phone": "Telefon",
+    "phonePlaceholder": "+90 5__ ___ __ __",
+    "email": "E-posta",
+    "emailPlaceholder": "ornek@email.com",
+    "eventType": "Etkinlik Türü",
+    "eventTypePlaceholder": "Seçiniz",
+    "eventDate": "Etkinlik Tarihi",
+    "guestCount": "Tahmini Kişi Sayısı",
+    "guestCountPlaceholder": "50",
+    "location": "Etkinlik Yeri / Şehir",
+    "locationPlaceholder": "İstanbul, Bağcılar...",
+    "budget": "Bütçe Aralığı",
+    "message": "Mesajınız / Notlar",
+    "messagePlaceholder": "Etkinliğiniz hakkında bilgi verin, beklentilerinizi paylaşın...",
+    "submit": "Teklif Talep Et",
+    "successTitle": "Talebiniz Alındı!",
+    "successText": "Ekibimiz en kısa sürede, genellikle aynı gün içinde sizinle iletişime geçecektir.",
+    "successCallText": "Beklemek istemiyor musunuz?",
+    "successCallLink": "Hemen arayın",
+    "whyUs": "Neden Biz?",
+    "talkNow": "Hemen Konuşun",
+    "talkSubtext": "Formu beklemek istemiyor musunuz?",
+    "perks": {
+      "sameDay": "Aynı gün yanıt garantisi",
+      "secure": "Bilgileriniz güvende",
+      "free": "Ücretsiz danışmanlık"
+    }
+  },
+  "cta": {
+    "badge": "Hayallerinizi Konuşalım",
+    "title1": "Etkinliğiniz İçin",
+    "title2": "Ücretsiz Teklif Alın",
+    "subtitle": "Bütçenize ve hayallerinize uygun en iyi organizasyonu planlamak için bugün bizimle iletişime geçin. Aynı gün yanıt garantisi.",
+    "quoteForm": "Teklif Formu",
+    "callNow": "Hemen Ara"
+  },
+  "footer": {
+    "tagline": "Organizasyon",
+    "description": "Hayalinizdeki etkinliği gerçeğe dönüştürüyoruz. 15 yılı aşkın deneyimle yanınızdayız.",
+    "services": "Hizmetlerimiz",
+    "quickLinks": "Hızlı Erişim",
+    "contact": "İletişim",
+    "rights": "Tüm hakları saklıdır.",
+    "taglineBottom": "Profesyonel organizasyon hizmetleri",
+    "serviceLinks": {
+      "wedding": "Düğün & Nişan",
+      "birthday": "Doğum Günü & Baby Shower",
+      "corporate": "Kurumsal Etkinlikler",
+      "graduation": "Mezuniyet & Sünnet"
+    },
+    "quickLinkItems": {
+      "about": "Hakkımızda",
+      "gallery": "Galeri",
+      "testimonials": "Müşteri Yorumları",
+      "contact": "İletişim",
+      "quote": "Teklif Al"
+    }
+  }
+}

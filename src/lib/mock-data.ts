@@ -1,3 +1,6 @@
+const unsplash = (id: string, w = 800, h = 600) =>
+  `https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&auto=format&q=75`;
+
 export const mockServices = [
   {
     slug: "dugun-nisan-kina",
@@ -17,6 +20,7 @@ export const mockServices = [
     ],
     priceRange: "₺45.000 — ₺200.000+",
     gradient: "from-rose-300 to-rose-500",
+    coverImage: unsplash("photo-1519225421980-715cb0215aed", 800, 400),
     icon: "Heart",
     order: 1,
   },
@@ -38,6 +42,7 @@ export const mockServices = [
     ],
     priceRange: "₺8.000 — ₺35.000",
     gradient: "from-amber-300 to-amber-500",
+    coverImage: unsplash("photo-1527529482837-4698179dc6ce", 800, 400),
     icon: "Gift",
     order: 2,
   },
@@ -59,6 +64,7 @@ export const mockServices = [
     ],
     priceRange: "₺25.000 — ₺500.000+",
     gradient: "from-sky-300 to-sky-500",
+    coverImage: unsplash("photo-1475721027785-f74eccf877e2", 800, 400),
     icon: "Briefcase",
     order: 3,
   },
@@ -80,71 +86,94 @@ export const mockServices = [
     ],
     priceRange: "₺12.000 — ₺60.000",
     gradient: "from-emerald-300 to-emerald-500",
+    coverImage: unsplash("photo-1523050854058-8df90110c9f1", 800, 400),
     icon: "GraduationCap",
     order: 4,
   },
 ];
 
 export const mockGallery = [
-  { id: "1", title: "Bahçe Düğünü — Zeynep & Burak", category: "Düğün", gradient: "from-rose-200 to-rose-400", year: "2024" },
-  { id: "2", title: "Tech Startup Lansmanı", category: "Kurumsal", gradient: "from-sky-200 to-sky-400", year: "2024" },
-  { id: "3", title: "Selin'in 1. Yaş Günü", category: "Doğum Günü", gradient: "from-amber-200 to-amber-400", year: "2024" },
-  { id: "4", title: "Nişan Töreni — Leyla & Emre", category: "Nişan", gradient: "from-pink-200 to-pink-400", year: "2023" },
-  { id: "5", title: "Sünnet Şöleni — Yusuf", category: "Sünnet", gradient: "from-emerald-200 to-emerald-400", year: "2023" },
-  { id: "6", title: "MBA Mezuniyeti — 2023", category: "Mezuniyet", gradient: "from-violet-200 to-violet-400", year: "2023" },
-  { id: "7", title: "Baby Shower — Elif Hanım", category: "Baby Shower", gradient: "from-fuchsia-200 to-fuchsia-400", year: "2024" },
-  { id: "8", title: "Yılbaşı Galası — Artı Teknoloji", category: "Kurumsal", gradient: "from-indigo-200 to-indigo-400", year: "2023" },
-  { id: "9", title: "Kına Gecesi — Derya", category: "Kına", gradient: "from-orange-200 to-orange-400", year: "2024" },
+  {
+    id: "1",
+    title: "Bahçe Düğünü — Zeynep & Burak",
+    category: "Düğün",
+    gradient: "from-rose-200 to-rose-400",
+    year: "2024",
+    imageUrl: unsplash("photo-1519225421980-715cb0215aed"),
+  },
+  {
+    id: "2",
+    title: "Tech Startup Lansmanı",
+    category: "Kurumsal",
+    gradient: "from-sky-200 to-sky-400",
+    year: "2024",
+    imageUrl: unsplash("photo-1475721027785-f74eccf877e2"),
+  },
+  {
+    id: "3",
+    title: "Selin'in 1. Yaş Günü",
+    category: "Doğum Günü",
+    gradient: "from-amber-200 to-amber-400",
+    year: "2024",
+    imageUrl: unsplash("photo-1527529482837-4698179dc6ce"),
+  },
+  {
+    id: "4",
+    title: "Nişan Töreni — Leyla & Emre",
+    category: "Nişan",
+    gradient: "from-pink-200 to-pink-400",
+    year: "2023",
+    imageUrl: unsplash("photo-1511285560929-80b456503681"),
+  },
+  {
+    id: "5",
+    title: "Sünnet Şöleni — Yusuf",
+    category: "Sünnet",
+    gradient: "from-emerald-200 to-emerald-400",
+    year: "2023",
+    imageUrl: unsplash("photo-1530103862676-de8c9debad1d"),
+  },
+  {
+    id: "6",
+    title: "MBA Mezuniyeti — 2023",
+    category: "Mezuniyet",
+    gradient: "from-violet-200 to-violet-400",
+    year: "2023",
+    imageUrl: unsplash("photo-1523050854058-8df90110c9f1"),
+  },
+  {
+    id: "7",
+    title: "Baby Shower — Elif Hanım",
+    category: "Baby Shower",
+    gradient: "from-fuchsia-200 to-fuchsia-400",
+    year: "2024",
+    imageUrl: unsplash("photo-1544367567-0f2fcb009e0b"),
+  },
+  {
+    id: "8",
+    title: "Yılbaşı Galası — Artı Teknoloji",
+    category: "Kurumsal",
+    gradient: "from-indigo-200 to-indigo-400",
+    year: "2023",
+    imageUrl: unsplash("photo-1492684223066-81342ee5ff30"),
+  },
+  {
+    id: "9",
+    title: "Kına Gecesi — Derya",
+    category: "Kına",
+    gradient: "from-orange-200 to-orange-400",
+    year: "2024",
+    imageUrl: unsplash("photo-1464366400600-7168b8af9bc3"),
+  },
 ];
 
 export const mockTestimonials = [
-  {
-    name: "Ayşe & Mehmet K.",
-    event: "Düğün Organizasyonu",
-    comment: "Düğünümüzün her detayı mükemmeldi. Odhun ekibi gerçekten işinin ehli; saatlerce uğraşacağımız konuları tek seferde hallettiler. Minnettarız!",
-    rating: 5,
-    date: "Ekim 2024",
-  },
-  {
-    name: "Zeynep Aydın",
-    event: "Kurumsal Lansman",
-    comment: "Şirketimizin ürün lansmanı için çalıştık. Profesyonel yaklaşım, zamanında teslimat ve misafirlerimizin aldığı hizmet kalitesi beklentilerimizi aştı.",
-    rating: 5,
-    date: "Eylül 2024",
-  },
-  {
-    name: "Fatma Çelik",
-    event: "Baby Shower",
-    comment: "Kızımın baby shower'ı için harika bir organizasyon kurdular. Dekorasyon, ikramlar ve sürpriz anlar için özel düşündükleri her detay için teşekkürler.",
-    rating: 5,
-    date: "Ağustos 2024",
-  },
-  {
-    name: "Hasan Yılmaz",
-    event: "Sünnet Organizasyonu",
-    comment: "Oğlumun sünnet düğünü için Odhun'u tercih ettik. Hem biz hem de misafirlerimiz çok memnun kaldı. Özellikle animatör hizmeti ve dekorasyon muhteşemdi.",
-    rating: 5,
-    date: "Temmuz 2024",
-  },
-  {
-    name: "Selin Arslan",
-    event: "Mezuniyet Töreni",
-    comment: "Üniversite mezuniyetimizi çok özel bir hale getirdiler. Koordinatör hanım gün boyunca yanımızdaydı, hiç bir sorunla uğraşmak zorunda kalmadık.",
-    rating: 5,
-    date: "Haziran 2024",
-  },
-  {
-    name: "Murat & Ceren D.",
-    event: "Nişan Töreni",
-    comment: "Nişan dekorasyonu hayallerimizin de ötesindeydi. Floral düzenlemeler özellikle çok şıktı. Düğünümüzü de Odhun ile yapacağız!",
-    rating: 5,
-    date: "Mayıs 2024",
-  },
+  { name: "Ayşe & Mehmet K.", event: "Düğün Organizasyonu", comment: "Düğünümüzün her detayı mükemmeldi. Odhun ekibi gerçekten işinin ehli; saatlerce uğraşacağımız konuları tek seferde hallettiler. Minnettarız!", rating: 5, date: "Ekim 2024" },
+  { name: "Zeynep Aydın", event: "Kurumsal Lansman", comment: "Şirketimizin ürün lansmanı için çalıştık. Profesyonel yaklaşım, zamanında teslimat ve misafirlerimizin aldığı hizmet kalitesi beklentilerimizi aştı.", rating: 5, date: "Eylül 2024" },
+  { name: "Fatma Çelik", event: "Baby Shower", comment: "Kızımın baby shower'ı için harika bir organizasyon kurdular. Dekorasyon, ikramlar ve sürpriz anlar için özel düşündükleri her detay için teşekkürler.", rating: 5, date: "Ağustos 2024" },
+  { name: "Hasan Yılmaz", event: "Sünnet Organizasyonu", comment: "Oğlumun sünnet düğünü için Odhun'u tercih ettik. Hem biz hem de misafirlerimiz çok memnun kaldı. Özellikle animatör hizmeti ve dekorasyon muhteşemdi.", rating: 5, date: "Temmuz 2024" },
+  { name: "Selin Arslan", event: "Mezuniyet Töreni", comment: "Üniversite mezuniyetimizi çok özel bir hale getirdiler. Koordinatör hanım gün boyunca yanımızdaydı, hiç bir sorunla uğraşmak zorunda kalmadık.", rating: 5, date: "Haziran 2024" },
+  { name: "Murat & Ceren D.", event: "Nişan Töreni", comment: "Nişan dekorasyonu hayallerimizin de ötesindeydi. Floral düzenlemeler özellikle çok şıktı. Düğünümüzü de Odhun ile yapacağız!", rating: 5, date: "Mayıs 2024" },
 ];
 
-export const mockStats = [
-  { number: "500+", label: "Mutlu Çift" },
-  { number: "15+", label: "Yıllık Deneyim" },
-  { number: "1200+", label: "Etkinlik" },
-  { number: "%100", label: "Müşteri Memnuniyeti" },
-];
+export const heroImageUrl = unsplash("photo-1464366400600-7168b8af9bc3", 1920, 1080);

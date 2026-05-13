@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Heart, Gift, Briefcase, GraduationCap, CheckCircle2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/motion/FadeIn";
@@ -10,14 +12,6 @@ import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { Button } from "@/components/ui/Button";
 import { mockServices } from "@/lib/mock-data";
-
-const categoryLabels: Record<string, string> = {
-  all: "Tümü",
-  dugun: "Düğün & Nişan",
-  dogum_gunu: "Doğum Günü",
-  kurumsal: "Kurumsal",
-  mezuniyet: "Mezuniyet & Sünnet",
-};
 
 const icons: Record<string, React.ReactNode> = {
   Heart: <Heart className="w-7 h-7" />,
@@ -27,7 +21,18 @@ const icons: Record<string, React.ReactNode> = {
 };
 
 export function ServicesPage() {
+  const t = useTranslations("services");
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "tr";
   const [active, setActive] = useState("all");
+
+  const categoryLabels: Record<string, string> = {
+    all: t("categories.all"),
+    dugun: t("categories.dugun"),
+    dogum_gunu: t("categories.dogum_gunu"),
+    kurumsal: t("categories.kurumsal"),
+    mezuniyet: t("categories.mezuniyet"),
+  };
 
   const filtered = active === "all"
     ? mockServices
@@ -44,13 +49,13 @@ export function ServicesPage() {
         <Container size="lg">
           <FadeIn className="text-center">
             <p className="text-xs font-sans tracking-[0.25em] uppercase text-[var(--accent)] mb-3">
-              Ne Yapabiliriz?
+              {t("pageBadge")}
             </p>
             <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-semibold text-white mb-4 leading-tight">
-              Hizmetlerimiz
+              {t("pageTitle")}
             </h1>
             <p className="text-white/50 max-w-xl mx-auto text-base font-sans leading-relaxed">
-              Her etkinlik türü için özel çözümler. Hayalinizdeki organizasyonu birlikte planlayalım.
+              {t("pageSubtitle")}
             </p>
           </FadeIn>
         </Container>
@@ -120,12 +125,12 @@ export function ServicesPage() {
                   </ul>
 
                   <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                    <Link href={`/hizmetler/${service.slug}`} className="flex-1">
+                    <Link href={`/${locale}/hizmetler/${service.slug}`} className="flex-1">
                       <Button variant="outline" size="sm" className="w-full">
                         Detayları Gör <ArrowRight className="w-3.5 h-3.5" />
                       </Button>
                     </Link>
-                    <Link href="/teklif" className="flex-1">
+                    <Link href={`/${locale}/teklif`} className="flex-1">
                       <Button variant="primary" size="sm" className="w-full">
                         Teklif Al
                       </Button>
@@ -150,7 +155,7 @@ export function ServicesPage() {
               Aradığınızı bulamadıysanız bizi arayın. Her etkinliğe özel çözüm üretiriz.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/teklif">
+              <Link href={`/${locale}/teklif`}>
                 <Button variant="primary" size="lg">Ücretsiz Teklif Al</Button>
               </Link>
               <a href="tel:+905321234567">

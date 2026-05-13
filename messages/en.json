@@ -1,0 +1,201 @@
+{
+  "common": {
+    "getQuote": "Get a Quote",
+    "callNow": "Call Now",
+    "freeQuote": "Get Free Quote",
+    "viewDetails": "View Details",
+    "learnMore": "Learn More",
+    "required": "*"
+  },
+  "nav": {
+    "services": "Services",
+    "gallery": "Gallery",
+    "about": "About Us",
+    "testimonials": "Reviews",
+    "contact": "Contact",
+    "quote": "Get Quote"
+  },
+  "hero": {
+    "badge": "Istanbul's #1 Event Organization",
+    "titleLine1": "Your Dream",
+    "titleLine2": "Event",
+    "titleAccent": "Is One Step Away",
+    "subtitle": "From weddings to birthdays, corporate events to graduations — we bring a professional touch to every celebration.",
+    "cta1": "Get a Quote",
+    "cta2": "Explore Gallery",
+    "scrollHint": "Scroll"
+  },
+  "stats": {
+    "couples": "Happy Couples",
+    "experience": "Years of Experience",
+    "events": "Events",
+    "satisfaction": "Client Satisfaction"
+  },
+  "services": {
+    "sectionBadge": "Our Services",
+    "sectionTitle": "A Perfect Solution",
+    "sectionTitleAccent": "For Every Event",
+    "sectionViewAll": "View all services",
+    "pageBadge": "What We Do",
+    "pageTitle": "Our Services",
+    "pageSubtitle": "Custom solutions for every type of event. Let's plan the event of your dreams together.",
+    "detailBadge": "Service Detail",
+    "priceRange": "Price Range",
+    "about": "About This Service",
+    "included": "What's Included?",
+    "otherServices": "Other Services",
+    "sidebarTitle": "Get a quote for this service",
+    "sidebarSubtitle": "We'll offer a budget-friendly price with a same-day response guarantee.",
+    "ctaTitle": "Can't Find What You're Looking For?",
+    "ctaSubtitle": "Call us — we create custom solutions for every type of event.",
+    "moreFeatures": "+{count} more services",
+    "categories": {
+      "all": "All",
+      "dugun": "Wedding & Engagement",
+      "dogum_gunu": "Birthday",
+      "kurumsal": "Corporate",
+      "mezuniyet": "Graduation & Circumcision"
+    },
+    "empty": "No services in this category yet."
+  },
+  "gallery": {
+    "sectionBadge": "Gallery",
+    "sectionTitle": "Special Moments",
+    "sectionTitleAccent": "We've Created",
+    "sectionViewAll": "View full gallery",
+    "pageBadge": "Our Work",
+    "pageTitle": "Gallery",
+    "pageSubtitle": "Snapshots from special events we've organized. Behind every moment is meticulous planning.",
+    "empty": "No events in this category yet.",
+    "counter": "{current} / {total}"
+  },
+  "about": {
+    "pageBadge": "Who We Are",
+    "pageTitle": "About Us",
+    "pageSubtitle": "In the heart of Istanbul, turning dreams into reality for 15 years.",
+    "storyBadge": "Our Story",
+    "storyTitle": "A Story Born from Dreams",
+    "story1": "Odhun Organization was founded in Istanbul in 2009 with a small team. This journey, started by our founding partner Aylin Öztürk with the belief that 'everyone deserves their dream event,' has today become one of Istanbul's most trusted event management companies.",
+    "story2": "Over the years, we've witnessed hundreds of weddings and thousands of special moments. We've grown while maintaining the same excitement, dedication, and excellence standards at every event.",
+    "story3": "Today, with our team of 10 experts, we organize all kinds of events from weddings to corporate events, birthdays to circumcisions in Istanbul and surrounding provinces.",
+    "valuesBadge": "Our Principles",
+    "valuesTitle": "Our Values",
+    "teamBadge": "Our Team",
+    "teamTitle": "The People Behind Us",
+    "ctaTitle": "Let's Work Together",
+    "ctaSubtitle": "Contact us today to start planning your event.",
+    "workWithUs": "Work With Us",
+    "values": {
+      "passion": { "title": "Passion", "desc": "We approach every event as if it were our own special day, planning every detail with care." },
+      "excellence": { "title": "Excellence", "desc": "With over 15 years of experience, we continuously raise our standards to deliver the best service." },
+      "trust": { "title": "Trust", "desc": "We build lasting relationships with our clients through transparent and honest communication." },
+      "punctuality": { "title": "Punctuality", "desc": "Adhering to schedules and deadlines is the cornerstone of our professionalism." }
+    },
+    "stats": {
+      "events": "Events Organized",
+      "couples": "Happy Couples",
+      "experience": "Years of Experience",
+      "satisfaction": "Client Satisfaction"
+    }
+  },
+  "testimonials": {
+    "sectionBadge": "Client Reviews",
+    "sectionTitle": "What Our Happy",
+    "sectionTitleAccent": "Clients Say",
+    "pageBadge": "Experiences",
+    "pageTitle": "Client Reviews",
+    "pageSubtitle": "Our clients describe us best. Experiences from over 500 happy couples and families.",
+    "happyClients": "Happy Clients",
+    "avgRating": "Average Rating",
+    "recommendRate": "Recommendation Rate",
+    "ctaTitle": "Join Our Happy Client List",
+    "ctaSubtitle": "Let's plan the event of your dreams together and join our happy clients."
+  },
+  "contact": {
+    "pageBadge": "Reach Us",
+    "pageTitle": "Contact",
+    "pageSubtitle": "Reach out for your questions. We guarantee a same-day response.",
+    "infoBadge": "Our Details",
+    "infoTitle": "Get In Touch",
+    "infoText": "You can contact us through any channel for information about your event or to request a quote. Our expert team will respond as soon as possible.",
+    "locationBadge": "Location",
+    "locationTitle": "Visit Us",
+    "openMaps": "Open in Google Maps →",
+    "quickTip": "💡 Quick Response",
+    "quickTipText": "For urgent questions, message us on WhatsApp — we usually respond within 30 minutes.",
+    "whatsapp": "Message on WhatsApp",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "hours": "Working Hours",
+    "hoursValue": "Mon–Sat 09:00–19:00",
+    "hoursClosed": "Closed on Sundays",
+    "phoneDesc": "Mon–Sat 09:00–19:00",
+    "whatsappDesc": "Message anytime 24/7",
+    "emailDesc": "We respond within 24 hours"
+  },
+  "quote": {
+    "pageBadge": "Free",
+    "pageTitle": "Get a Quote",
+    "pageSubtitle": "Fill in the form and our experts will prepare a budget-friendly quote for you the same day.",
+    "name": "Full Name",
+    "namePlaceholder": "Your Full Name",
+    "phone": "Phone",
+    "phonePlaceholder": "+90 5__ ___ __ __",
+    "email": "Email",
+    "emailPlaceholder": "example@email.com",
+    "eventType": "Event Type",
+    "eventTypePlaceholder": "Select",
+    "eventDate": "Event Date",
+    "guestCount": "Estimated Guest Count",
+    "guestCountPlaceholder": "50",
+    "location": "Event Location / City",
+    "locationPlaceholder": "Istanbul, Bağcılar...",
+    "budget": "Budget Range",
+    "message": "Your Message / Notes",
+    "messagePlaceholder": "Tell us about your event and share your expectations...",
+    "submit": "Request a Quote",
+    "successTitle": "Request Received!",
+    "successText": "Our team will get back to you as soon as possible, usually the same day.",
+    "successCallText": "Don't want to wait?",
+    "successCallLink": "Call us now",
+    "whyUs": "Why Us?",
+    "talkNow": "Talk Now",
+    "talkSubtext": "Don't want to wait for the form?",
+    "perks": {
+      "sameDay": "Same-day response guarantee",
+      "secure": "Your data is safe",
+      "free": "Free consultation"
+    }
+  },
+  "cta": {
+    "badge": "Let's Talk About Your Dreams",
+    "title1": "Get a Free Quote",
+    "title2": "For Your Event",
+    "subtitle": "Contact us today to plan the best event that fits your budget and dreams. Same-day response guarantee.",
+    "quoteForm": "Quote Form",
+    "callNow": "Call Now"
+  },
+  "footer": {
+    "tagline": "Organization",
+    "description": "We turn your dream events into reality. Over 15 years of experience by your side.",
+    "services": "Our Services",
+    "quickLinks": "Quick Links",
+    "contact": "Contact",
+    "rights": "All rights reserved.",
+    "taglineBottom": "Professional event organization services",
+    "serviceLinks": {
+      "wedding": "Wedding & Engagement",
+      "birthday": "Birthday & Baby Shower",
+      "corporate": "Corporate Events",
+      "graduation": "Graduation & Circumcision"
+    },
+    "quickLinkItems": {
+      "about": "About Us",
+      "gallery": "Gallery",
+      "testimonials": "Client Reviews",
+      "contact": "Contact",
+      "quote": "Get Quote"
+    }
+  }
+}
