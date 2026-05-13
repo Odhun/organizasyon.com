@@ -1,26 +1,113 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─── GOLD CLASSIC (varsayılan) ─────────────────────────────────────── */
+:root,
+[data-theme="gold-classic"] {
+  --accent:        #c9a961;
+  --accent-soft:   #e8d9a8;
+  --accent-light:  #f5efd4;
+  --bg:            #faf6ec;
+  --bg-alt:        #f0e8d4;
+  --surface-dark:  #1f3a2e;
+  --surface-dark2: #2d5240;
+  --ink:           #2a2a2a;
+  --ink-light:     #4a4a4a;
+  --muted:         #7a7a7a;
+  --border:        #ddd0b3;
+  --white:         #ffffff;
 }
 
+/* ─── ROSE ELEGANT ──────────────────────────────────────────────────── */
+[data-theme="rose-elegant"] {
+  --accent:        #b76e79;
+  --accent-soft:   #e0b4bb;
+  --accent-light:  #f5e6e8;
+  --bg:            #fcf6f1;
+  --bg-alt:        #f2e8e1;
+  --surface-dark:  #5a1f2b;
+  --surface-dark2: #7a2d3c;
+  --ink:           #2a2020;
+  --ink-light:     #4a3030;
+  --muted:         #8a7070;
+  --border:        #d9c4c8;
+  --white:         #ffffff;
+}
+
+/* ─── EMERALD LUXE ───────────────────────────────────────────────────── */
+[data-theme="emerald-luxe"] {
+  --accent:        #c9a961;
+  --accent-soft:   #e8d9a8;
+  --accent-light:  #f5efd4;
+  --bg:            #f4f7f3;
+  --bg-alt:        #e6ede4;
+  --surface-dark:  #0f4d3a;
+  --surface-dark2: #1a6b52;
+  --ink:           #1a2a1e;
+  --ink-light:     #2a4030;
+  --muted:         #6a7a6e;
+  --border:        #c4d4c0;
+  --white:         #ffffff;
+}
+
+/* ─── MIDNIGHT GOLD ──────────────────────────────────────────────────── */
+[data-theme="midnight-gold"] {
+  --accent:        #d4af37;
+  --accent-soft:   #e8d38a;
+  --accent-light:  #f5ecbe;
+  --bg:            #f7f4ed;
+  --bg-alt:        #edeae0;
+  --surface-dark:  #0d1b3d;
+  --surface-dark2: #1a2f5e;
+  --ink:           #1a1a2e;
+  --ink-light:     #2a2a44;
+  --muted:         #6a6a8a;
+  --border:        #c8c4b4;
+  --white:         #ffffff;
+}
+
+/* ─── TAILWIND TEMA TOKENLARI ────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent:        var(--accent);
+  --color-accent-soft:   var(--accent-soft);
+  --color-accent-light:  var(--accent-light);
+  --color-bg:            var(--bg);
+  --color-bg-alt:        var(--bg-alt);
+  --color-surface-dark:  var(--surface-dark);
+  --color-surface-dark2: var(--surface-dark2);
+  --color-ink:           var(--ink);
+  --color-ink-light:     var(--ink-light);
+  --color-muted:         var(--muted);
+  --color-border:        var(--border);
+
+  --font-serif: var(--font-playfair);
+  --font-sans:  var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── TEMEL STİLLER ─────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-alt); }
+::-webkit-scrollbar-thumb { background: var(--accent-soft); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ─── SEÇİM ──────────────────────────────────────────────────────────── */
+::selection {
+  background: var(--accent-soft);
+  color: var(--surface-dark);
 }
