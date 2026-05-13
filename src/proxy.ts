@@ -2,21 +2,21 @@ import createMiddleware from 'next-intl/middleware'
 import { locales, defaultLocale } from './i18n/routing'
 import { NextRequest } from 'next/server'
 
-const intlMiddleware = createMiddleware({
+const intlProxy = createMiddleware({
   locales,
   defaultLocale,
   localePrefix: 'as-needed',
 })
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Admin routes bypass intl middleware
+  // Admin routes bypass intl proxy
   if (pathname.startsWith('/admin')) {
     return
   }
 
-  return intlMiddleware(request)
+  return intlProxy(request)
 }
 
 export const config = {
