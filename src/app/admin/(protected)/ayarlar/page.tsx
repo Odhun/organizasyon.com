@@ -190,9 +190,9 @@ export default function AyarlarPage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setAnnouncement({ ...announcement, enabled: !announcement.enabled })}
-                    className={`relative w-12 h-6 rounded-full overflow-hidden transition-colors ${announcement.enabled ? 'bg-[#E11D48]' : 'bg-gray-200'}`}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${announcement.enabled ? 'bg-[#E11D48]' : 'bg-gray-200'}`}
                   >
-                    <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${announcement.enabled ? 'translate-x-7' : 'translate-x-1'}`} />
+                    <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${announcement.enabled ? 'translate-x-6' : 'translate-x-0'}`} />
                   </button>
                   <span className="text-sm font-medium text-gray-700">Duyuruyu Aktif Et</span>
                 </div>
@@ -212,9 +212,9 @@ export default function AyarlarPage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setAnnouncement({ ...announcement, dismissible: !announcement.dismissible })}
-                    className={`relative w-12 h-6 rounded-full overflow-hidden transition-colors ${announcement.dismissible ? 'bg-[#E11D48]' : 'bg-gray-200'}`}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${announcement.dismissible ? 'bg-[#E11D48]' : 'bg-gray-200'}`}
                   >
-                    <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${announcement.dismissible ? 'translate-x-7' : 'translate-x-1'}`} />
+                    <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${announcement.dismissible ? 'translate-x-6' : 'translate-x-0'}`} />
                   </button>
                   <span className="text-sm font-medium text-gray-700">Kapatılabilir</span>
                 </div>

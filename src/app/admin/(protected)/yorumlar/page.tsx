@@ -265,7 +265,7 @@ export default function YorumlarPage() {
                 <div className="flex items-center gap-3">
                   <button type="button" onClick={() => setForm({ ...form, approved: !form.approved })}
                     className={`relative w-12 h-6 rounded-full transition-colors ${form.approved ? 'bg-[#E11D48]' : 'bg-gray-200'}`}>
-                    <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.approved ? 'translate-x-7' : 'translate-x-1'}`} />
+                    <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.approved ? 'translate-x-6' : 'translate-x-0'}`} />
                   </button>
                   <span className="text-sm font-medium text-gray-700">Onaylı</span>
                 </div>
