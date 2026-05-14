@@ -14,11 +14,27 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const isTr = locale === "tr";
+  const title = isTr
+    ? "Odhun Organizasyon | Profesyonel Etkinlik Yönetimi"
+    : "Odhun Organization | Professional Event Management";
+  const description = isTr
+    ? "Anamur'da düğün, nişan, doğum günü, kurumsal ve tüm özel etkinlikler için profesyonel organizasyon hizmeti."
+    : "Professional event organization for weddings, engagements, birthdays, corporate events and all special occasions in Anamur.";
   return {
-    title: locale === "tr" ? "Odhun Organizasyon | Profesyonel Etkinlik Yönetimi" : "Odhun Organization | Professional Event Management",
-    description: locale === "tr"
-      ? "Anamur'da düğün, nişan, doğum günü, kurumsal ve tüm özel etkinlikler için profesyonel organizasyon hizmeti."
-      : "Professional event organization for weddings, engagements, birthdays, corporate events and all special occasions in Anamur.",
+    title,
+    description,
+    alternates: {
+      canonical: `/${locale}`,
+      languages: { tr: "/tr", en: "/en" },
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/${locale}`,
+      locale: isTr ? "tr_TR" : "en_US",
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: title }],
+    },
   };
 }
 

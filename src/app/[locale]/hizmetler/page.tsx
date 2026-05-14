@@ -9,11 +9,25 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const isTr = locale === "tr";
+  const title = isTr ? "Hizmetlerimiz | Odhun Organizasyon" : "Our Services | Odhun Organization";
+  const description = isTr
+    ? "Düğün, nişan, doğum günü, kurumsal etkinlik ve daha fazlası. Profesyonel organizasyon hizmetlerimizi keşfedin."
+    : "Wedding, engagement, birthday, corporate events and more. Discover our professional organization services.";
   return {
-    title: locale === "tr" ? "Hizmetlerimiz | Odhun Organizasyon" : "Our Services | Odhun Organization",
-    description: locale === "tr"
-      ? "Düğün, nişan, doğum günü, kurumsal etkinlik ve daha fazlası. Profesyonel organizasyon hizmetlerimizi keşfedin."
-      : "Wedding, engagement, birthday, corporate events and more. Discover our professional organization services.",
+    title,
+    description,
+    alternates: {
+      canonical: `/${locale}/hizmetler`,
+      languages: { tr: "/tr/hizmetler", en: "/en/hizmetler" },
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/${locale}/hizmetler`,
+      locale: isTr ? "tr_TR" : "en_US",
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: title }],
+    },
   };
 }
 
