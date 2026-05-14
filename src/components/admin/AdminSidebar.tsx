@@ -10,6 +10,7 @@ import {
   Sparkles,
   Settings,
   LogOut,
+  Download,
 } from 'lucide-react'
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
   { href: '/admin/galeri', label: 'Galeri', icon: Images },
   { href: '/admin/hizmetler', label: 'Hizmetler', icon: Sparkles },
   { href: '/admin/ayarlar', label: 'Site Ayarları', icon: Settings },
+  { href: '/admin/yedekleme', label: 'Yedekleme', icon: Download },
 ]
 
 export default function AdminSidebar() {

@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getAllTestimonials, approveTestimonial, rejectTestimonial, deleteTestimonial, updateTestimonial } from '@/lib/firebase/testimonials'
+import { getAllTestimonials, approveTestimonial, rejectTestimonial, deleteTestimonial, updateTestimonial, createTestimonial } from '@/lib/firebase/testimonials'
+import { mockTestimonials } from '@/lib/mock-data'
 import type { Testimonial } from '@/types/models'
 
 const EVENT_TYPES = ['Düğün', 'Nişan', 'Kına', 'Doğum Günü', 'Baby Shower', 'Kurumsal', 'Açılış', 'Mezuniyet', 'Sünnet', 'Diğer']
@@ -21,15 +22,46 @@ export default function YorumlarPage() {
   const [editTarget, setEditTarget] = useState<Testimonial | null>(null)
   const [form, setForm] = useState<EditForm>({ customerName: '', eventType: '', rating: 5, commentTr: '', commentEn: '', approved: false })
   const [saving, setSaving] = useState(false)
+  const [seeding, setSeeding] = useState(false)
   const [hoverRating, setHoverRating] = useState(0)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => { load() }, [])
 
   async function load() {
     setLoading(true)
-    const data = await getAllTestimonials()
-    setTestimonials(data)
-    setLoading(false)
+    setLoadError('')
+    try {
+      const data = await getAllTestimonials()
+      setTestimonials(data)
+    } catch (err) {
+      setLoadError('Firebase bağlantı hatası: ' + String(err))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleSeedMock() {
+    if (!confirm('Örnek 6 yorumu Firebase\'e eklemek istiyor musunuz? Onaylı olarak eklenecek.')) return
+    setSeeding(true)
+    try {
+      await Promise.all(
+        mockTestimonials.map((t) =>
+          createTestimonial({
+            customerName: t.name,
+            eventType: t.event,
+            rating: t.rating as 1 | 2 | 3 | 4 | 5,
+            comment: { tr: t.comment },
+            approved: true,
+          })
+        )
+      )
+      await load()
+    } catch (err) {
+      alert('Seed hatası: ' + String(err))
+    } finally {
+      setSeeding(false)
+    }
   }
 
   function openEdit(t: Testimonial) {
@@ -104,13 +136,32 @@ export default function YorumlarPage() {
         ))}
       </div>
 
+      {loadError && (
+        <div className="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+          {loadError}
+        </div>
+      )}
+
+      {!loading && !loadError && testimonials.length === 0 && (
+        <div className="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-center justify-between gap-4 flex-wrap">
+          <span>Firebase&apos;de yorum yok. Sitedeki yorumlar örnek veriden geliyor.</span>
+          <button
+            onClick={handleSeedMock}
+            disabled={seeding}
+            className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 whitespace-nowrap"
+          >
+            {seeding ? 'Ekleniyor...' : 'Örnek Yorumları Ekle'}
+          </button>
+        </div>
+      )}
+
       {loading ? (
         <div className="text-gray-500">Yükleniyor...</div>
-      ) : filtered.length === 0 ? (
+      ) : filtered.length === 0 && testimonials.length > 0 ? (
         <div className="bg-white rounded-xl p-8 text-center text-gray-500 border border-gray-100">
-          Yorum bulunamadı.
+          Bu filtrede yorum bulunamadı.
         </div>
-      ) : (
+      ) : filtered.length === 0 ? null : (
         <div className="grid gap-4">
           {filtered.map((t) => (
             <div key={t.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
