@@ -61,6 +61,8 @@ export default function GaleriPage() {
     try {
       const url = await uploadImage(file, getImagePath('gallery/covers', file.name))
       f('coverImage', url)
+    } catch (err) {
+      alert('Görsel yüklenemedi. Firebase Storage aktif mi?\n' + String(err))
     } finally {
       setUploadingCover(false)
     }
@@ -74,6 +76,8 @@ export default function GaleriPage() {
       const urls = await Promise.all(files.map((file) => uploadImage(file, getImagePath('gallery/images', file.name))))
       const existing = form.images.trim()
       f('images', existing ? `${existing}\n${urls.join('\n')}` : urls.join('\n'))
+    } catch (err) {
+      alert('Görsel yüklenemedi. Firebase Storage aktif mi?\n' + String(err))
     } finally {
       setUploadingImages(false)
     }
@@ -231,8 +235,8 @@ export default function GaleriPage() {
                   <div className="flex items-end pb-1">
                     <div className="flex items-center gap-2">
                       <button type="button" onClick={() => f('active', !form.active)}
-                        className={`relative w-12 h-6 rounded-full transition-colors ${form.active ? 'bg-[#E11D48]' : 'bg-gray-200'}`}>
-                        <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.active ? 'translate-x-6' : 'translate-x-0'}`} />
+                        className={`relative w-12 h-6 rounded-full overflow-hidden transition-colors ${form.active ? 'bg-[#E11D48]' : 'bg-gray-200'}`}>
+                        <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.active ? 'translate-x-5' : 'translate-x-0'}`} />
                       </button>
                       <span className="text-sm font-medium text-gray-700">Aktif</span>
                     </div>
