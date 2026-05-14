@@ -1,7 +1,7 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { createBackup, getBackups, deleteBackup, restoreBackup, type BackupMeta } from '@/lib/firebase/backups'
-import { Download, Trash2, RotateCcw, CloudUpload, Loader2, CheckCircle, AlertCircle, Database } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { generateBackup, restoreFromJSON, type BackupData } from '@/lib/firebase/backups'
+import { Download, UploadCloud, RotateCcw, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 
 const COL_LABELS: Record<string, string> = {
   services: 'Hizmetler',
@@ -11,79 +11,75 @@ const COL_LABELS: Record<string, string> = {
   siteSettings: 'Site Ayarları',
 }
 
-function formatBytes(bytes: number) {
-  if (bytes < 1024) return bytes + ' B'
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
-  return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
-}
-
-function formatDate(ts: BackupMeta['createdAt']) {
-  if (!ts) return '—'
-  const d = new Date((ts as unknown as { seconds: number }).seconds * 1000)
-  return d.toLocaleString('tr-TR')
-}
-
 export default function YedeklemePage() {
-  const [backups, setBackups] = useState<BackupMeta[]>([])
-  const [loading, setLoading] = useState(true)
-  const [creating, setCreating] = useState(false)
-  const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
-
-  // Restore modal state
-  const [restoreTarget, setRestoreTarget] = useState<BackupMeta | null>(null)
-  const [selectedCols, setSelectedCols] = useState<string[]>([])
+  const [backing, setBacking] = useState(false)
   const [restoring, setRestoring] = useState(false)
+  const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
+  const [lastBackup, setLastBackup] = useState<string | null>(null)
 
-  useEffect(() => { load() }, [])
+  // Restore state
+  const [parsedBackup, setParsedBackup] = useState<BackupData | null>(null)
+  const [selectedCols, setSelectedCols] = useState<string[]>([])
+  const fileRef = useRef<HTMLInputElement>(null)
 
-  async function load() {
-    setLoading(true)
-    try {
-      const data = await getBackups()
-      setBackups(data)
-    } catch (err) {
-      setMsg({ type: 'err', text: 'Yedekler yüklenemedi: ' + String(err) })
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    setLastBackup(localStorage.getItem('odhun_last_backup'))
+  }, [])
 
-  async function handleCreate() {
-    setCreating(true)
+  async function handleBackup() {
+    setBacking(true)
     setMsg(null)
     try {
-      const meta = await createBackup()
-      setMsg({ type: 'ok', text: `Yedekleme tamamlandı — ${Object.values(meta.counts).reduce((a, b) => a + b, 0)} kayıt` })
-      await load()
+      const { json, counts } = await generateBackup()
+      const blob = new Blob([json], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `odhun-yedek-${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      const now = new Date().toISOString()
+      localStorage.setItem('odhun_last_backup', now)
+      setLastBackup(now)
+      const total = Object.values(counts).reduce((a, b) => a + b, 0)
+      setMsg({ type: 'ok', text: `Yedek indirildi — ${total} kayıt` })
     } catch (err) {
       setMsg({ type: 'err', text: 'Yedekleme hatası: ' + String(err) })
     } finally {
-      setCreating(false)
+      setBacking(false)
     }
   }
 
-  async function handleDelete(backup: BackupMeta) {
-    if (!confirm('Bu yedeği kalıcı olarak silmek istiyor musunuz?')) return
-    try {
-      await deleteBackup(backup)
-      await load()
-    } catch (err) {
-      setMsg({ type: 'err', text: 'Silinemedi: ' + String(err) })
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string) as BackupData
+        if (!data.version || !data.data) throw new Error('Geçersiz yedek dosyası')
+        setParsedBackup(data)
+        setSelectedCols(Object.keys(data.data))
+        setMsg(null)
+      } catch (err) {
+        setMsg({ type: 'err', text: 'Dosya okunamadı: ' + String(err) })
+      }
     }
-  }
-
-  function openRestore(backup: BackupMeta) {
-    setRestoreTarget(backup)
-    setSelectedCols(Object.keys(backup.counts))
+    reader.readAsText(file)
+    e.target.value = ''
   }
 
   async function handleRestore() {
-    if (!restoreTarget || selectedCols.length === 0) return
+    if (!parsedBackup || selectedCols.length === 0) return
+    if (!confirm(`${selectedCols.length} koleksiyon geri yüklenecek. Mevcut veriler silinecek. Emin misiniz?`)) return
     setRestoring(true)
+    setMsg(null)
     try {
-      await restoreBackup(restoreTarget, selectedCols)
+      await restoreFromJSON(parsedBackup, selectedCols)
       setMsg({ type: 'ok', text: `Geri yükleme tamamlandı — ${selectedCols.length} koleksiyon` })
-      setRestoreTarget(null)
+      setParsedBackup(null)
     } catch (err) {
       setMsg({ type: 'err', text: 'Geri yükleme hatası: ' + String(err) })
     } finally {
@@ -92,92 +88,63 @@ export default function YedeklemePage() {
   }
 
   return (
-    <div className="max-w-3xl">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-2xl font-bold text-gray-800">Veri Yedekleme</h1>
-        <button
-          onClick={handleCreate}
-          disabled={creating}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#E11D48] hover:bg-[#BE123C] text-white font-semibold rounded-xl text-sm transition-colors disabled:opacity-50"
-        >
-          {creating ? <Loader2 size={15} className="animate-spin" /> : <CloudUpload size={15} />}
-          {creating ? 'Yedekleniyor...' : 'Yeni Yedek Al'}
-        </button>
+    <div className="max-w-2xl space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">Veri Yedekleme</h1>
+        <p className="text-gray-400 text-sm">Tüm Firestore verisi JSON olarak bilgisayarınıza indirilir.</p>
       </div>
-      <p className="text-gray-400 text-sm mb-6">Tüm koleksiyonlar Firebase Storage&apos;a yüklenir.</p>
 
       {msg && (
-        <div className={`flex items-center gap-2 p-4 rounded-xl text-sm mb-5 ${msg.type === 'ok' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+        <div className={`flex items-center gap-2 p-4 rounded-xl text-sm ${msg.type === 'ok' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
           {msg.type === 'ok' ? <CheckCircle size={15} /> : <AlertCircle size={15} />}
           {msg.text}
         </div>
       )}
 
-      {loading ? (
-        <div className="text-gray-400 text-sm">Yükleniyor...</div>
-      ) : backups.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-10 text-center text-gray-400 text-sm">
-          Henüz yedek yok. İlk yedeği almak için &ldquo;Yeni Yedek Al&rdquo; butonuna tıklayın.
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {backups.map((b) => (
-            <div key={b.id} className="bg-white rounded-xl border border-gray-100 p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 mb-1">{formatDate(b.createdAt)}</p>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {Object.entries(b.counts).map(([col, count]) => (
-                      <span key={col} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                        {COL_LABELS[col] ?? col}: {count}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="text-xs text-gray-400 flex items-center gap-1">
-                    <Database size={11} /> {formatBytes(b.size)}
-                  </p>
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <a
-                    href={b.downloadURL}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-medium transition-colors"
-                  >
-                    <Download size={13} /> İndir
-                  </a>
-                  <button
-                    onClick={() => openRestore(b)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-medium transition-colors"
-                  >
-                    <RotateCcw size={13} /> Geri Yükle
-                  </button>
-                  <button
-                    onClick={() => handleDelete(b)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-medium transition-colors"
-                  >
-                    <Trash2 size={13} /> Sil
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Backup */}
+      <div className="bg-white rounded-xl border border-gray-100 p-6">
+        <h2 className="text-base font-semibold text-gray-800 mb-1">Yedek Al</h2>
+        <p className="text-sm text-gray-400 mb-4">
+          Hizmetler, galeri, yorumlar, rezervasyonlar ve site ayarları dahil tüm veri indirilir.
+        </p>
+        {lastBackup && (
+          <p className="text-xs text-gray-400 mb-4">
+            Son yedekleme: {new Date(lastBackup).toLocaleString('tr-TR')}
+          </p>
+        )}
+        <button
+          onClick={handleBackup}
+          disabled={backing}
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#E11D48] hover:bg-[#BE123C] text-white font-semibold rounded-xl text-sm transition-colors disabled:opacity-50"
+        >
+          {backing ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+          {backing ? 'Hazırlanıyor...' : 'Yedeği İndir'}
+        </button>
+      </div>
 
-      {/* Restore modal */}
-      {restoreTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Geri Yükleme</h2>
-            <p className="text-sm text-gray-500 mb-5">
-              Seçilen koleksiyonlardaki mevcut tüm veriler silinip yedekten geri yazılacak.
-              <span className="block mt-1 font-semibold text-red-600">Bu işlem geri alınamaz.</span>
+      {/* Restore */}
+      <div className="bg-white rounded-xl border border-gray-100 p-6">
+        <h2 className="text-base font-semibold text-gray-800 mb-1">Geri Yükle</h2>
+        <p className="text-sm text-gray-400 mb-4">
+          Daha önce indirilen <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">.json</code> yedek dosyasını seçin.
+          <span className="block mt-1 text-red-500 font-medium">Seçili koleksiyonlardaki mevcut veriler silinir.</span>
+        </p>
+
+        <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={handleFileSelect} />
+        <button
+          onClick={() => fileRef.current?.click()}
+          className="flex items-center gap-2 px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-sm transition-colors mb-5"
+        >
+          <UploadCloud size={15} /> Dosya Seç
+        </button>
+
+        {parsedBackup && (
+          <div className="border border-gray-100 rounded-xl p-4 space-y-3">
+            <p className="text-xs text-gray-500">
+              Yedek tarihi: <strong>{new Date(parsedBackup.exportedAt).toLocaleString('tr-TR')}</strong>
             </p>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Geri yüklenecek koleksiyonlar</p>
-            <div className="space-y-2 mb-6">
-              {Object.keys(restoreTarget.counts).map((col) => (
+            <div className="space-y-2">
+              {Object.keys(parsedBackup.data).map((col) => (
                 <label key={col} className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -191,29 +158,23 @@ export default function YedeklemePage() {
                     className="w-4 h-4 accent-[#E11D48]"
                   />
                   <span className="text-sm text-gray-700">{COL_LABELS[col] ?? col}</span>
-                  <span className="text-xs text-gray-400 ml-auto">{restoreTarget.counts[col]} kayıt</span>
+                  <span className="text-xs text-gray-400 ml-auto">
+                    {(parsedBackup.data[col] as unknown[]).length} kayıt
+                  </span>
                 </label>
               ))}
             </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setRestoreTarget(null)}
-                disabled={restoring}
-                className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors"
-              >
-                İptal
-              </button>
-              <button
-                onClick={handleRestore}
-                disabled={restoring || selectedCols.length === 0}
-                className="flex-1 bg-[#E11D48] hover:bg-[#BE123C] text-white font-semibold rounded-lg py-2.5 text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {restoring ? <><Loader2 size={14} className="animate-spin" /> Yükleniyor...</> : 'Geri Yükle'}
-              </button>
-            </div>
+            <button
+              onClick={handleRestore}
+              disabled={restoring || selectedCols.length === 0}
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#E11D48] hover:bg-[#BE123C] text-white font-semibold rounded-xl text-sm transition-colors disabled:opacity-50 mt-2"
+            >
+              {restoring ? <Loader2 size={15} className="animate-spin" /> : <RotateCcw size={15} />}
+              {restoring ? 'Yükleniyor...' : 'Geri Yükle'}
+            </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
