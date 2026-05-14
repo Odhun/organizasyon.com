@@ -1,7 +1,6 @@
 'use client'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { getAllGalleryItems, updateGalleryItem, deleteGalleryItem, createGalleryItem } from '@/lib/firebase/gallery'
-import { uploadToCloudinary } from '@/lib/cloudinary'
 import { seedGallery } from '@/lib/seed'
 import type { GalleryItem } from '@/types/models'
 
@@ -36,10 +35,6 @@ export default function GaleriPage() {
   const [form, setForm] = useState<FormState>(emptyForm)
   const [saving, setSaving] = useState(false)
   const [seeding, setSeeding] = useState(false)
-  const [uploadingCover, setUploadingCover] = useState(false)
-  const [uploadingImages, setUploadingImages] = useState(false)
-  const coverInputRef = useRef<HTMLInputElement>(null)
-  const imagesInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { load() }, [])
 
@@ -53,35 +48,6 @@ export default function GaleriPage() {
   function openEdit(item: GalleryItem) { setForm(itemToForm(item)); setEditTarget(item); setModal('edit') }
   function closeModal() { setModal(null); setEditTarget(null) }
   function f(key: keyof FormState, val: string | number | boolean) { setForm((prev) => ({ ...prev, [key]: val })) }
-
-  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploadingCover(true)
-    try {
-      const url = await uploadToCloudinary(file)
-      f('coverImage', url)
-    } catch (err) {
-      alert('Görsel yüklenemedi:\n' + String(err))
-    } finally {
-      setUploadingCover(false)
-    }
-  }
-
-  async function handleImagesUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? [])
-    if (!files.length) return
-    setUploadingImages(true)
-    try {
-      const urls = await Promise.all(files.map((file) => uploadToCloudinary(file)))
-      const existing = form.images.trim()
-      f('images', existing ? `${existing}\n${urls.join('\n')}` : urls.join('\n'))
-    } catch (err) {
-      alert('Görsel yüklenemedi:\n' + String(err))
-    } finally {
-      setUploadingImages(false)
-    }
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -192,32 +158,15 @@ export default function GaleriPage() {
                   </select>
                 </div>
 
-                {/* Kapak görsel */}
                 <div>
-                  <label className={lc}>Kapak Görsel *</label>
-                  <div className="flex gap-2">
-                    <input value={form.coverImage} onChange={(e) => f('coverImage', e.target.value)} required className={`${ic} flex-1`} placeholder="https://... veya dosya yükle" />
-                    <button type="button" onClick={() => coverInputRef.current?.click()} disabled={uploadingCover}
-                      className="shrink-0 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
-                      {uploadingCover ? '...' : 'Yükle'}
-                    </button>
-                  </div>
-                  <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+                  <label className={lc}>Kapak Görsel URL *</label>
+                  <input value={form.coverImage} onChange={(e) => f('coverImage', e.target.value)} required className={ic} placeholder="https://..." />
                   {form.coverImage && <img src={form.coverImage} alt="" className="mt-2 h-24 w-auto rounded-lg object-cover" />}
                 </div>
 
-                {/* Galeri görselleri */}
                 <div>
-                  <label className={lc}>Galeri Görselleri</label>
-                  <div className="flex gap-2 mb-2">
-                    <button type="button" onClick={() => imagesInputRef.current?.click()} disabled={uploadingImages}
-                      className="px-3 py-1.5 bg-[#E11D48] text-white hover:bg-[#BE123C] rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
-                      {uploadingImages ? 'Yükleniyor...' : '+ Fotoğraf Yükle'}
-                    </button>
-                    <span className="text-xs text-gray-400 self-center">veya aşağıya URL girin</span>
-                  </div>
-                  <input ref={imagesInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImagesUpload} />
-                  <textarea value={form.images} onChange={(e) => f('images', e.target.value)} rows={4} className={ic} placeholder="Her satıra bir URL" />
+                  <label className={lc}>Galeri Görselleri — her satıra bir URL</label>
+                  <textarea value={form.images} onChange={(e) => f('images', e.target.value)} rows={5} className={ic} placeholder={'https://...\nhttps://...\nhttps://...'} />
                   {form.images.trim() && (
                     <div className="flex flex-wrap gap-2 mt-2">
                       {form.images.split('\n').map((s) => s.trim()).filter(Boolean).map((url, i) => (
@@ -245,7 +194,7 @@ export default function GaleriPage() {
 
                 <div className="flex gap-3 pt-2">
                   <button type="button" onClick={closeModal} className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors">İptal</button>
-                  <button type="submit" disabled={saving || uploadingCover || uploadingImages} className="flex-1 bg-[#E11D48] hover:bg-[#BE123C] text-white font-semibold rounded-lg py-2.5 text-sm transition-colors disabled:opacity-50">
+                  <button type="submit" disabled={saving} className="flex-1 bg-[#E11D48] hover:bg-[#BE123C] text-white font-semibold rounded-lg py-2.5 text-sm transition-colors disabled:opacity-50">
                     {saving ? 'Kaydediliyor...' : modal === 'add' ? 'Ekle' : 'Güncelle'}
                   </button>
                 </div>
