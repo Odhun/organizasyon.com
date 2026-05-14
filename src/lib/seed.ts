@@ -67,11 +67,12 @@ export async function initializeSiteSettings() {
       mapsEmbedUrl: "",
     },
     social: {
-      instagram: undefined,
-      facebook: undefined,
-      youtube: undefined,
-      tiktok: undefined,
-      pinterest: undefined,
+      instagram: "",
+      facebook: "",
+      youtube: "",
+      twitter: "",
+      tiktok: "",
+      pinterest: "",
     },
     about: {
       title: { tr: "Hakkımızda", en: "About Us" },

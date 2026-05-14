@@ -55,9 +55,9 @@ export default function AyarlarPage() {
       brand: { name: { tr: brand.nameTr, en: brand.nameEn }, tagline: { tr: brand.taglineTr, en: brand.taglineEn }, logoUrl: brand.logoUrl, faviconUrl: brand.faviconUrl },
       hero: { titleLine1: { tr: hero.titleLine1Tr, en: hero.titleLine1En }, titleLine2: { tr: hero.titleLine2Tr, en: hero.titleLine2En }, subtitle: { tr: hero.subtitleTr, en: hero.subtitleEn }, ctaText: { tr: hero.ctaTextTr, en: hero.ctaTextEn }, ctaLink: hero.ctaLink, backgroundImage: hero.backgroundImage },
       contact: { phone: contact.phone, whatsapp: contact.whatsapp, email: contact.email, address: { tr: contact.addressTr, en: contact.addressEn }, workingHours: { tr: contact.workingHoursTr, en: contact.workingHoursEn }, mapsEmbedUrl: contact.mapsEmbedUrl },
-      social: { instagram: social.instagram || undefined, facebook: social.facebook || undefined, youtube: social.youtube || undefined, twitter: social.twitter || undefined, tiktok: social.tiktok || undefined, pinterest: social.pinterest || undefined },
-      about: { ...settings!.about, title: { tr: about.titleTr, en: about.titleEn }, story: { tr: about.storyTr, en: about.storyEn }, teamPhoto: about.teamPhoto || undefined },
-      announcement: { enabled: announcement.enabled, text: { tr: announcement.textTr, en: announcement.textEn }, link: announcement.link || undefined, style: announcement.style, dismissible: announcement.dismissible },
+      social: { instagram: social.instagram, facebook: social.facebook, youtube: social.youtube, twitter: social.twitter, tiktok: social.tiktok, pinterest: social.pinterest },
+      about: { ...settings!.about, title: { tr: about.titleTr, en: about.titleEn }, story: { tr: about.storyTr, en: about.storyEn }, teamPhoto: about.teamPhoto },
+      announcement: { enabled: announcement.enabled, text: { tr: announcement.textTr, en: announcement.textEn }, link: announcement.link, style: announcement.style, dismissible: announcement.dismissible },
       seo: { defaultTitle: { tr: seo.defaultTitleTr, en: seo.defaultTitleEn }, defaultDescription: { tr: seo.defaultDescriptionTr, en: seo.defaultDescriptionEn }, keywords: { tr: seo.keywordsTr, en: seo.keywordsEn }, ogImage: seo.ogImage },
     })
     setSaved(true)
