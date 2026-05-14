@@ -1,149 +1,219 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { collection, getDocs } from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
-import { Download, CheckCircle, AlertCircle, Loader2, Database } from 'lucide-react'
+import { createBackup, getBackups, deleteBackup, restoreBackup, type BackupMeta } from '@/lib/firebase/backups'
+import { Download, Trash2, RotateCcw, CloudUpload, Loader2, CheckCircle, AlertCircle, Database } from 'lucide-react'
 
-function serializeValue(val: unknown): unknown {
-  if (val === null || val === undefined) return val
-  if (typeof val !== 'object') return val
-  if (Array.isArray(val)) return val.map(serializeValue)
-  const obj = val as Record<string, unknown>
-  if (typeof obj.seconds === 'number' && typeof obj.nanoseconds === 'number') {
-    return new Date(obj.seconds * 1000).toISOString()
-  }
-  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, serializeValue(v)]))
+const COL_LABELS: Record<string, string> = {
+  services: 'Hizmetler',
+  gallery: 'Galeri',
+  testimonials: 'Müşteri Yorumları',
+  reservations: 'Rezervasyonlar',
+  siteSettings: 'Site Ayarları',
 }
 
-const COLLECTIONS = [
-  { id: 'services', label: 'Hizmetler', desc: 'Tüm hizmet kayıtları' },
-  { id: 'gallery', label: 'Galeri', desc: 'Galeri görselleri ve meta verileri' },
-  { id: 'testimonials', label: 'Müşteri Yorumları', desc: 'Onaylı ve bekleyen tüm yorumlar' },
-  { id: 'reservations', label: 'Rezervasyonlar', desc: 'Tüm teklif talepleri' },
-  { id: 'siteSettings', label: 'Site Ayarları', desc: 'Marka, iletişim, SEO ayarları' },
-]
+function formatBytes(bytes: number) {
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+}
 
-type Status = 'idle' | 'loading' | 'success' | 'error'
+function formatDate(ts: BackupMeta['createdAt']) {
+  if (!ts) return '—'
+  const d = new Date((ts as unknown as { seconds: number }).seconds * 1000)
+  return d.toLocaleString('tr-TR')
+}
 
 export default function YedeklemePage() {
-  const [status, setStatus] = useState<Status>('idle')
-  const [error, setError] = useState('')
-  const [counts, setCounts] = useState<Record<string, number>>({})
-  const [lastBackup, setLastBackup] = useState<string | null>(null)
+  const [backups, setBackups] = useState<BackupMeta[]>([])
+  const [loading, setLoading] = useState(true)
+  const [creating, setCreating] = useState(false)
+  const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
-  useEffect(() => {
-    setLastBackup(localStorage.getItem('odhun_last_backup'))
-  }, [])
+  // Restore modal state
+  const [restoreTarget, setRestoreTarget] = useState<BackupMeta | null>(null)
+  const [selectedCols, setSelectedCols] = useState<string[]>([])
+  const [restoring, setRestoring] = useState(false)
 
-  async function handleBackup() {
-    setStatus('loading')
-    setError('')
+  useEffect(() => { load() }, [])
+
+  async function load() {
+    setLoading(true)
     try {
-      const backupData: Record<string, unknown> = {}
-      const newCounts: Record<string, number> = {}
-
-      for (const col of COLLECTIONS) {
-        const snap = await getDocs(collection(db, col.id))
-        const docs = snap.docs.map((d) => serializeValue({ id: d.id, ...d.data() }))
-        backupData[col.id] = docs
-        newCounts[col.id] = snap.docs.length
-      }
-
-      const payload = {
-        exportedAt: new Date().toISOString(),
-        version: '1.0',
-        site: 'odhun-organizasyon',
-        data: backupData,
-      }
-
-      const json = JSON.stringify(payload, null, 2)
-      const blob = new Blob([json], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `odhun-yedek-${new Date().toISOString().split('T')[0]}.json`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-
-      const now = new Date().toISOString()
-      localStorage.setItem('odhun_last_backup', now)
-      setLastBackup(now)
-      setCounts(newCounts)
-      setStatus('success')
+      const data = await getBackups()
+      setBackups(data)
     } catch (err) {
-      setError(String(err))
-      setStatus('error')
+      setMsg({ type: 'err', text: 'Yedekler yüklenemedi: ' + String(err) })
+    } finally {
+      setLoading(false)
     }
   }
 
-  const totalDocs = Object.values(counts).reduce((a, b) => a + b, 0)
+  async function handleCreate() {
+    setCreating(true)
+    setMsg(null)
+    try {
+      const meta = await createBackup()
+      setMsg({ type: 'ok', text: `Yedekleme tamamlandı — ${Object.values(meta.counts).reduce((a, b) => a + b, 0)} kayıt` })
+      await load()
+    } catch (err) {
+      setMsg({ type: 'err', text: 'Yedekleme hatası: ' + String(err) })
+    } finally {
+      setCreating(false)
+    }
+  }
+
+  async function handleDelete(backup: BackupMeta) {
+    if (!confirm('Bu yedeği kalıcı olarak silmek istiyor musunuz?')) return
+    try {
+      await deleteBackup(backup)
+      await load()
+    } catch (err) {
+      setMsg({ type: 'err', text: 'Silinemedi: ' + String(err) })
+    }
+  }
+
+  function openRestore(backup: BackupMeta) {
+    setRestoreTarget(backup)
+    setSelectedCols(Object.keys(backup.counts))
+  }
+
+  async function handleRestore() {
+    if (!restoreTarget || selectedCols.length === 0) return
+    setRestoring(true)
+    try {
+      await restoreBackup(restoreTarget, selectedCols)
+      setMsg({ type: 'ok', text: `Geri yükleme tamamlandı — ${selectedCols.length} koleksiyon` })
+      setRestoreTarget(null)
+    } catch (err) {
+      setMsg({ type: 'err', text: 'Geri yükleme hatası: ' + String(err) })
+    } finally {
+      setRestoring(false)
+    }
+  }
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-gray-800 mb-2">Veri Yedekleme</h1>
-      <p className="text-gray-500 text-sm mb-8">
-        Tüm Firebase veritabanı JSON formatında indirilir. Yedeği güvenli bir yerde saklayın.
-      </p>
+    <div className="max-w-3xl">
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-2xl font-bold text-gray-800">Veri Yedekleme</h1>
+        <button
+          onClick={handleCreate}
+          disabled={creating}
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#E11D48] hover:bg-[#BE123C] text-white font-semibold rounded-xl text-sm transition-colors disabled:opacity-50"
+        >
+          {creating ? <Loader2 size={15} className="animate-spin" /> : <CloudUpload size={15} />}
+          {creating ? 'Yedekleniyor...' : 'Yeni Yedek Al'}
+        </button>
+      </div>
+      <p className="text-gray-400 text-sm mb-6">Tüm koleksiyonlar Firebase Storage&apos;a yüklenir.</p>
 
-      {/* Collections list */}
-      <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50 mb-6">
-        {COLLECTIONS.map((col) => (
-          <div key={col.id} className="flex items-center justify-between px-5 py-4">
-            <div className="flex items-center gap-3">
-              <Database size={15} className="text-gray-400 shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-gray-800">{col.label}</p>
-                <p className="text-xs text-gray-400">{col.desc}</p>
+      {msg && (
+        <div className={`flex items-center gap-2 p-4 rounded-xl text-sm mb-5 ${msg.type === 'ok' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+          {msg.type === 'ok' ? <CheckCircle size={15} /> : <AlertCircle size={15} />}
+          {msg.text}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="text-gray-400 text-sm">Yükleniyor...</div>
+      ) : backups.length === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-100 p-10 text-center text-gray-400 text-sm">
+          Henüz yedek yok. İlk yedeği almak için &ldquo;Yeni Yedek Al&rdquo; butonuna tıklayın.
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {backups.map((b) => (
+            <div key={b.id} className="bg-white rounded-xl border border-gray-100 p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-800 mb-1">{formatDate(b.createdAt)}</p>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {Object.entries(b.counts).map(([col, count]) => (
+                      <span key={col} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                        {COL_LABELS[col] ?? col}: {count}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                    <Database size={11} /> {formatBytes(b.size)}
+                  </p>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <a
+                    href={b.downloadURL}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-medium transition-colors"
+                  >
+                    <Download size={13} /> İndir
+                  </a>
+                  <button
+                    onClick={() => openRestore(b)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-medium transition-colors"
+                  >
+                    <RotateCcw size={13} /> Geri Yükle
+                  </button>
+                  <button
+                    onClick={() => handleDelete(b)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-medium transition-colors"
+                  >
+                    <Trash2 size={13} /> Sil
+                  </button>
+                </div>
               </div>
             </div>
-            {counts[col.id] !== undefined && (
-              <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
-                {counts[col.id]} kayıt
-              </span>
-            )}
+          ))}
+        </div>
+      )}
+
+      {/* Restore modal */}
+      {restoreTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Geri Yükleme</h2>
+            <p className="text-sm text-gray-500 mb-5">
+              Seçilen koleksiyonlardaki mevcut tüm veriler silinip yedekten geri yazılacak.
+              <span className="block mt-1 font-semibold text-red-600">Bu işlem geri alınamaz.</span>
+            </p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Geri yüklenecek koleksiyonlar</p>
+            <div className="space-y-2 mb-6">
+              {Object.keys(restoreTarget.counts).map((col) => (
+                <label key={col} className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedCols.includes(col)}
+                    onChange={(e) =>
+                      setSelectedCols(e.target.checked
+                        ? [...selectedCols, col]
+                        : selectedCols.filter((c) => c !== col)
+                      )
+                    }
+                    className="w-4 h-4 accent-[#E11D48]"
+                  />
+                  <span className="text-sm text-gray-700">{COL_LABELS[col] ?? col}</span>
+                  <span className="text-xs text-gray-400 ml-auto">{restoreTarget.counts[col]} kayıt</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setRestoreTarget(null)}
+                disabled={restoring}
+                className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors"
+              >
+                İptal
+              </button>
+              <button
+                onClick={handleRestore}
+                disabled={restoring || selectedCols.length === 0}
+                className="flex-1 bg-[#E11D48] hover:bg-[#BE123C] text-white font-semibold rounded-lg py-2.5 text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {restoring ? <><Loader2 size={14} className="animate-spin" /> Yükleniyor...</> : 'Geri Yükle'}
+              </button>
+            </div>
           </div>
-        ))}
-      </div>
-
-      {/* Last backup info */}
-      {lastBackup && (
-        <p className="text-xs text-gray-400 mb-4">
-          Son yedekleme: {new Date(lastBackup).toLocaleString('tr-TR')}
-        </p>
-      )}
-
-      {/* Status messages */}
-      {status === 'success' && (
-        <div className="flex items-center gap-2 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm mb-4">
-          <CheckCircle size={16} className="shrink-0" />
-          <span>Yedekleme tamamlandı — {totalDocs} kayıt indirildi.</span>
         </div>
       )}
-      {status === 'error' && (
-        <div className="flex items-start gap-2 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm mb-4">
-          <AlertCircle size={16} className="shrink-0 mt-0.5" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {/* Action button */}
-      <button
-        onClick={handleBackup}
-        disabled={status === 'loading'}
-        className="flex items-center gap-2 px-6 py-3 bg-[#E11D48] hover:bg-[#BE123C] text-white font-semibold rounded-xl text-sm transition-colors disabled:opacity-50"
-      >
-        {status === 'loading' ? (
-          <><Loader2 size={16} className="animate-spin" /> Yedekleniyor...</>
-        ) : (
-          <><Download size={16} /> Tüm Veriyi Yedekle</>
-        )}
-      </button>
-
-      <p className="mt-4 text-xs text-gray-400">
-        Yedek dosyası tarayıcınıza indirilir. Sunucuya yüklenmez.
-      </p>
     </div>
   )
 }
