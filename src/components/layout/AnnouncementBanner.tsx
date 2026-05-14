@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useSiteSettings } from "@/contexts/SiteSettingsContext";
+import { getSiteSettings } from "@/lib/firebase/siteSettings";
+import type { SiteSettings } from "@/types/models";
 
 const styleMap: Record<string, string> = {
   gold: "bg-[var(--accent)] text-[var(--surface-dark)]",
@@ -12,12 +13,17 @@ const styleMap: Record<string, string> = {
 };
 
 export function AnnouncementBanner() {
-  const settings = useSiteSettings();
+  const [ann, setAnn] = useState<SiteSettings["announcement"] | null>(null);
   const params = useParams();
   const locale = (params?.locale as string) ?? "tr";
   const [dismissed, setDismissed] = useState(false);
 
-  const ann = settings?.announcement;
+  useEffect(() => {
+    getSiteSettings()
+      .then((s) => { if (s?.announcement) setAnn(s.announcement) })
+      .catch(() => {});
+  }, []);
+
   if (!ann?.enabled || dismissed) return null;
 
   const text = locale === "en" ? ann.text.en : ann.text.tr;
