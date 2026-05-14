@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
 import { getAllGalleryItems, updateGalleryItem, deleteGalleryItem, createGalleryItem } from '@/lib/firebase/gallery'
-import { uploadImage, getImagePath } from '@/lib/firebase/storage'
+import { uploadToCloudinary } from '@/lib/cloudinary'
 import { seedGallery } from '@/lib/seed'
 import type { GalleryItem } from '@/types/models'
 
@@ -54,22 +54,15 @@ export default function GaleriPage() {
   function closeModal() { setModal(null); setEditTarget(null) }
   function f(key: keyof FormState, val: string | number | boolean) { setForm((prev) => ({ ...prev, [key]: val })) }
 
-  function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-    return Promise.race([
-      promise,
-      new Promise<T>((_, reject) => setTimeout(() => reject(new Error('Zaman aşımı — Firebase Storage aktif mi?')), ms)),
-    ])
-  }
-
   async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     setUploadingCover(true)
     try {
-      const url = await withTimeout(uploadImage(file, getImagePath('gallery/covers', file.name)), 10000)
+      const url = await uploadToCloudinary(file)
       f('coverImage', url)
     } catch (err) {
-      alert('Görsel yüklenemedi. Firebase Storage aktif mi?\n' + String(err))
+      alert('Görsel yüklenemedi:\n' + String(err))
     } finally {
       setUploadingCover(false)
     }
@@ -80,14 +73,11 @@ export default function GaleriPage() {
     if (!files.length) return
     setUploadingImages(true)
     try {
-      const urls = await withTimeout(
-        Promise.all(files.map((file) => uploadImage(file, getImagePath('gallery/images', file.name)))),
-        10000,
-      )
+      const urls = await Promise.all(files.map((file) => uploadToCloudinary(file)))
       const existing = form.images.trim()
       f('images', existing ? `${existing}\n${urls.join('\n')}` : urls.join('\n'))
     } catch (err) {
-      alert('Görsel yüklenemedi. Firebase Storage aktif mi?\n' + String(err))
+      alert('Görsel yüklenemedi:\n' + String(err))
     } finally {
       setUploadingImages(false)
     }
